@@ -1,0 +1,143 @@
+/* Estilos para el componente de Login
+   Diseñado con enfoque mobile-first para una experiencia óptima en dispositivos móviles */
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: start;
+  min-height: 100vh;
+  background-color: #FCD532;
+  padding: 1rem;
+}
+
+.login-form-container {
+  width: 100%;
+  max-width: 400px;
+  padding: 2rem;
+}
+
+/* Estilos para el logo */
+.login-logo {
+  text-align: center;
+  margin-bottom: 3rem;
+  margin-top: 3rem;
+}
+
+.login-logo img {
+  max-width: 250px;
+  height: auto;
+  filter: brightness(0);
+}
+
+#logo {
+  max-width: 250px;
+  height: auto;
+  filter: brightness(0);
+}
+
+/* Título del formulario */
+.login-form-container h1 {
+  text-align: center;
+  color: var(--primary-color);
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+/* Estilos para los grupos de formulario */
+.form-group {
+  margin-bottom: 2rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.2rem;
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.form-control:focus {
+  border-color: var(--primary-color);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb), 0.2);
+}
+
+input.form-control {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #fff;
+}
+
+input.form-control:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb), 0.2);
+}
+
+/* Botón de inicio de sesión */
+.login-btn {
+  width: 100%;
+  margin-top: 1.5rem;
+  padding: 0.875rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 4px;
+  background-color: #000000;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.login-btn:hover {
+  background-color: #000000;
+}
+
+.login-btn:disabled {
+  background-color: #0f0f0f;
+  cursor: not-allowed;
+}
+
+/* Mensaje de error */
+.error-message {
+  background-color: #ffebee;
+  color: #d32f2f;
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+/* Media queries para ajustes responsivos */
+@media (max-width: 480px) {
+  .login-form-container {
+    padding: 1.5rem;
+  }
+  
+  .login-logo img {
+    max-width: 250px;
+  }
+  
+  #logo {
+    max-width: 250px;
+  }
+  
+  .login-form-container h1 {
+    font-size: 1.25rem;
+  }
+  
+  .form-control {
+    padding: 0.625rem;
+  }
+  
+  .login-btn {
+    padding: 0.75rem;
+  }
+}

@@ -1,0 +1,233 @@
+/* Estilos para el componente Valor a Pagar - Diseño mobile-first basado en imágenes de referencia */
+
+.valor-a-pagar-container {
+  min-height: 100vh;
+  background: #f8f9fa;
+  padding: 15px;
+  font-family: 'Arial', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+/* Header ahora es un componente reutilizable */
+
+/* Ilustración principal */
+.main-illustration {
+  width: 100%;
+  max-width: 280px;
+  margin-bottom: 25px;
+  display: flex;
+  justify-content: center;
+}
+
+.payment-illustration {
+  width: 100%;
+  max-width: 250px;
+  height: auto;
+  object-fit: contain;
+}
+
+/* Tarjeta de información del pago */
+.payment-info-card {
+  width: 100%;
+  max-width: 280px;
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  margin-bottom: 25px;
+}
+
+/* Badge de placa */
+.placa-badge {
+  background: #FFD700;
+  border-radius: 25px;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 25px;
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+}
+
+.car-icon {
+  font-size: 18px;
+}
+
+.placa-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.placa-number {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  margin-left: auto;
+}
+
+/* Detalles del pago */
+.payment-details {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.detail-label {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.detail-value {
+  font-size: 14px;
+  color: #333;
+  font-weight: 600;
+}
+
+.total-row {
+  border-top: 2px solid #f0f0f0;
+  padding-top: 15px;
+  margin-top: 10px;
+}
+
+.total-amount {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+.processing-note {
+  font-size: 12px;
+  color: #999;
+  text-align: center;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #f0f0f0;
+}
+
+/* Sección del botón de continuar pago */
+.continue-payment-section {
+  width: 100%;
+  max-width: 280px;
+}
+
+.continue-payment-btn {
+  width: 100%;
+  background: #FFD700;
+  border: none;
+  border-radius: 15px;
+  padding: 16px 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 6px 20px rgba(255, 215, 0, 0.3);
+}
+
+.continue-payment-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+  background: #FFC107;
+}
+
+.continue-payment-btn:active {
+  transform: translateY(0);
+}
+
+.btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  color: #333;
+}
+
+.btn-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.btn-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.btn-subtitle {
+  font-size: 12px;
+  color: #666;
+  line-height: 1;
+  margin: 0;
+}
+
+.PayIcon {
+  width: 43px;
+  height: 43px;
+}
+
+/* Responsive design */
+@media (min-width: 768px) {
+  .valor-a-pagar-container {
+    padding: 40px;
+  }
+  
+  .header {
+    max-width: 500px;
+  }
+  
+  .main-illustration {
+    max-width: 400px;
+  }
+  
+  .payment-info-card {
+    max-width: 450px;
+    padding: 35px;
+  }
+  
+  .continue-payment-section {
+    max-width: 450px;
+  }
+  
+  .mobile-text,
+  .payment-text {
+    font-size: 28px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .valor-a-pagar-container {
+    padding: 60px;
+  }
+  
+  .payment-devices {
+    gap: 30px;
+  }
+  
+  .payment-card {
+    width: 140px;
+    height: 90px;
+  }
+  
+  .payment-ticket {
+    width: 90px;
+    height: 130px;
+  }
+}

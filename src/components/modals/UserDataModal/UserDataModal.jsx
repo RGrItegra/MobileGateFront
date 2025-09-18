@@ -2,14 +2,10 @@ import React from 'react';
 import '../../../styles/modals/UserDataModal/UserDataModal.css';
 
 const UserDataModal = ({ isOpen, type, message, onClose, showLoading = false }) => {
-  console.log('🔍 UserDataModal props:', { isOpen, type, message, showLoading });
-  
   if (!isOpen) {
-    console.log('❌ Modal not open, returning null');
     return null;
   }
-  
-  console.log('✅ Modal is open, rendering...');
+  ;
 
   const handleOverlayClick = (e) => {
     if (e.target === e.currentTarget && !showLoading) {

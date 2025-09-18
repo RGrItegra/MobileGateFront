@@ -4,8 +4,6 @@ import '../../styles/Loading/Loading.css';
 
 const Loading = () => {
   return (
-    <div>
-    
     <div className="loading-container">
       <span className="loader"></span>
       <div className="loading-text">
@@ -13,8 +11,6 @@ const Loading = () => {
         <span className="loading-text-animation">...</span>
       </div>
     </div>
-    </div>
-    
   );
 };
 

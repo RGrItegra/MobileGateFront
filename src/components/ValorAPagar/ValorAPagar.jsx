@@ -23,10 +23,25 @@ const ValorAPagar = () => {
   const [showPrintModal, setShowPrintModal] = useState(false);
   const [paymentCompleted, setPaymentCompleted] = useState(false);
 
+  // Función para formatear la placa con espacios entre caracteres
+  const formatPlaca = (placa) => {
+    return placa.split('').join(' ');
+  };
+
   const handleContinuarPago = () => {
-    // Simular proceso de pago exitoso
-    setPaymentCompleted(true);
-    setShowPrintModal(true);
+    // Navegar a la página de confirmación de pago
+    const confirmationData = {
+      placa: paymentData.placa,
+      estacionamiento: paymentData.totalAPagar,
+      transaccionDigital: paymentData.procesamiento,
+      formaPago: 'NEQUI',
+      fecha: new Date().toLocaleDateString('es-CO'),
+      total: paymentData.totalAPagar + paymentData.procesamiento
+    };
+    
+    navigate('/confirmacion-pago', { 
+      state: { paymentData: confirmationData } 
+    });
   };
 
   const handlePrintAccept = () => {
@@ -64,9 +79,7 @@ const ValorAPagar = () => {
       <div className="payment-info-card">
         {/* Badge de placa */}
         <div className="placa-badge">
-          <span className="car-icon">🚗</span>
-          <span className="placa-label">Placa</span>
-          <span className="placa-number">{paymentData.placa}</span>
+          <span className="placa-number">{formatPlaca(paymentData.placa)}</span>
         </div>
 
         {/* Detalles del pago */}

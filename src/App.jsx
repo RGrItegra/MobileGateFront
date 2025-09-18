@@ -15,6 +15,7 @@ import { getUserUUID } from './services/authService'
 // Nota: Los demás componentes se implementarán en futuras iteraciones
 // import Consulta from './components/Consulta/Consulta'
 import ValorAPagar from './components/ValorAPagar/ValorAPagar'
+import ConfirmacionPago from './components/ConfirmacionPago/ConfirmacionPago'
 // import Settings from './components/Settings/Settings'
 
 // Componente interno que usa el contexto de loading
@@ -41,6 +42,7 @@ function AppContent() {
             {/* Las siguientes rutas se implementarán en futuras iteraciones */}
             {/* <Route path="/consulta" element={<Consulta />} /> */}
             <Route path="/valor-a-pagar" element={<ValorAPagar />} />
+            <Route path="/confirmacion-pago" element={<ConfirmacionPago />} />
             {/* <Route path="/settings" element={<Settings />} /> */}
             <Route path="/" element={<Navigate to="/login" />} />
             <Route path="*" element={<Navigate to="/login" />} />

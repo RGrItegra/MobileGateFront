@@ -26,7 +26,17 @@ const Welcome = () => {
   };
 
   const handleInputChange = (e) => {
-    const value = e.target.value;
+    let value = e.target.value;
+    
+    // Filtrar caracteres según el tipo de input
+    if (inputType === 'placa') {
+      // Solo permitir letras y números, convertir a mayúsculas
+      value = value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+    } else {
+      // Solo permitir números para código
+      value = value.replace(/[^0-9]/g, '');
+    }
+    
     setInputValue(value);
     setIsValid(validateInput(value, inputType));
   };

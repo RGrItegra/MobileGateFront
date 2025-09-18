@@ -1,11 +1,9 @@
 // Servicio para manejar la autenticación de usuarios
 // Este archivo contiene funciones para iniciar sesión, cerrar sesión y verificar el estado de autenticación
 
-import axios from 'axios';
-
 // URL base para las peticiones de autenticación
 // En un entorno real, esto vendría de variables de entorno o configuración
-const API_URL = localStorage.getItem('serverUrl') || 'https://api.ejemplo.com';
+const API_URL = localStorage.getItem('serverUrl') || 'http://localhost:3000';
 
 /**
  * Función para generar un UUID v4
@@ -45,46 +43,52 @@ getUserUUID();
  */
 export const loginUser = async (username, password) => {
   try {
-    // En un entorno real, esta sería una petición POST a un endpoint de autenticación
-    // Por ahora, simulamos una respuesta exitosa después de un breve retraso
+    // Obtener el UUID del dispositivo
+    const deviceUuid = getUserUUID();
     
-    // Simulación de petición al servidor
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        // Validación simple para demostración
-        if (username === 'admin' && password === 'admin123') {
-          const userData = {
-            id: 1,
-            username: username,
-            name: 'Administrador',
-            token: 'token-simulado-jwt'
-          };
-          
-          // Guardamos los datos del usuario en localStorage
-          localStorage.setItem('user', JSON.stringify(userData));
-          
-          resolve(userData);
-        } else {
-          reject({ message: 'Credenciales incorrectas' });
-        }
-      }, 1000); // Simulamos 1 segundo de retraso
+    // Preparar los datos en el formato requerido por el backend
+    const loginData = {
+      usr_name: username,
+      usr_passwd: password,
+      devUuid: deviceUuid
+    };
+
+    // Realizar la petición al backend usando fetch
+    const response = await fetch(`${API_URL}/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(loginData)
     });
+
+    // Verificar si la respuesta es exitosa
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ message: 'Error de conexión' }));
+      throw new Error(errorData.message || `Error ${response.status}: ${response.statusText}`);
+    }
+
+    // Obtener los datos de respuesta
+    const userData = await response.json();
     
-    // Implementación real con axios (comentada)
-    /*
-    const response = await axios.post(`${API_URL}/auth/login`, {
-      username,
-      password
-    });
-    
-    if (response.data && response.data.token) {
-      localStorage.setItem('user', JSON.stringify(response.data));
+    // Guardar los datos del usuario en localStorage si hay token
+    if (userData && userData.token) {
+      localStorage.setItem('user', JSON.stringify(userData));
     }
     
-    return response.data;
-    */
+    return {
+      success: true,
+      user: userData
+    };
+
   } catch (error) {
-    throw error.response?.data || error;
+    // Si es un error de red o fetch
+    if (error instanceof TypeError) {
+      throw new Error('Error de conexión. Verifique su conexión a internet.');
+    }
+    
+    // Re-lanzar el error para que sea manejado por el componente
+    throw error;
   }
 };
 

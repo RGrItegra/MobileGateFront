@@ -9,6 +9,9 @@ import Loading from './components/Loading/Loading'
 // Importación del contexto de loading
 import { LoadingProvider, useLoading } from './contexts/LoadingContext'
 
+// Importación del contexto de autenticación
+import { AuthProvider } from './contexts/AuthContext'
+
 // Importación del servicio de autenticación para el UUID
 import { getUserUUID } from './services/authService'
 
@@ -26,16 +29,15 @@ function AppContent() {
   useEffect(() => {
     // Obtener o generar el UUID del usuario
     const uuid = getUserUUID();
-    // Activar para obtener el UUID
     console.log('UUID del usuario:', uuid);
   }, []);
 
+  if (isLoading) {
+    return <Loading />;
+  }
   return (
     <>
-      {isLoading ? (
-        <Loading />
-      ) : (
-        <Router>
+      <Router>
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/welcome" element={<Welcome />} />
@@ -46,18 +48,19 @@ function AppContent() {
             {/* <Route path="/settings" element={<Settings />} /> */}
             <Route path="/" element={<Navigate to="/login" />} />
             <Route path="*" element={<Navigate to="/login" />} />
-          </Routes>
-        </Router>
-      )}
+        </Routes>
+      </Router>
     </>
   );
 }
 
 function App() {
   return (
-    <LoadingProvider>
-      <AppContent />
-    </LoadingProvider>
+    <AuthProvider>
+      <LoadingProvider>
+        <AppContent />
+      </LoadingProvider>
+    </AuthProvider>
   );
 }
 

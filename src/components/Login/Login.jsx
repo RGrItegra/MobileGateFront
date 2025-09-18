@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
+import { loginUser } from '../../services/authService';
 import UserDataModal from '../modals/UserDataModal/UserDataModal';
 import '../../styles/Login/Login.css';
 
@@ -15,6 +17,16 @@ const Login = () => {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login, isAuthenticated } = useAuth();
+
+  // Efecto para redirigir si ya está autenticado
+  useEffect(() => {
+    if (isAuthenticated) {
+      const from = location.state?.from?.pathname || '/welcome';
+      navigate(from, { replace: true });
+    }
+  }, [isAuthenticated, navigate, location]);
 
   // Función para mostrar modal
   const showModal = (type, message) => {
@@ -41,26 +53,31 @@ const Login = () => {
     showModal('loading', 'Validando credenciales...');
     
     try {
-      // Simular tiempo de validación
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Llamar al servicio de autenticación
+      const response = await loginUser(username, password);
       
-      // Validar credenciales
-      if (username === 'admin123' && password === 'admin123') {
+      if (response.success && response.user) {
+        // Actualizar el contexto de autenticación
+        login(response.user);
+        
         // Éxito
         showModal('success', 'Inicio de sesión exitoso. Redirigiendo...');
+        
+        // Determinar la ruta de destino
+        const from = location.state?.from?.pathname || '/welcome';
         
         // Navegar después de mostrar éxito
         setTimeout(() => {
           closeModal();
-          navigate('/welcome');
+          navigate(from, { replace: true });
         }, 2000);
       } else {
-        // Error de credenciales
-        showModal('error', 'Usuario o contraseña incorrectos');
+        // Error en la respuesta
+        showModal('error', 'Error en la autenticación');
       }
     } catch (error) {
-      // Error del sistema
-      showModal('error', 'Error del sistema. Intente nuevamente');
+      // Error del sistema o credenciales incorrectas
+      showModal('error', error.message || 'Error del sistema. Intente nuevamente');
     } finally {
       setIsAuthenticating(false);
     }
@@ -71,7 +88,8 @@ const Login = () => {
     closeModal();
     // Si es éxito y el usuario cierra manualmente, navegar igual
     if (modal.type === 'success') {
-      navigate('/welcome');
+      const from = location.state?.from?.pathname || '/welcome';
+      navigate(from, { replace: true });
     }
   };
 

@@ -100,12 +100,6 @@ src/
 - **Accesibilidad** - Componentes accesibles y semánticos
 - **Responsive Design** - Adaptable a diferentes tamaños de pantalla
 
-## 🔄 Gestión de Estado
-
-La aplicación utiliza:
-- **React Context** - Para el manejo global del estado de loading
-- **useState/useEffect** - Para estado local de componentes
-- **React Router** - Para el estado de navegación
 
 ## 🚀 Despliegue
 
@@ -117,13 +111,6 @@ npm run build
 
 Los archivos optimizados se generarán en la carpeta `dist/`.
 
-## 🤝 Contribución
-
-1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/nueva-funcionalidad`)
-3. Commit tus cambios (`git commit -m '✨ feat: nueva funcionalidad'`)
-4. Push a la rama (`git push origin feature/nueva-funcionalidad`)
-5. Abre un Pull Request
 
 ## 📝 Convenciones de Commit
 
@@ -145,7 +132,3 @@ Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) par
 ## 👥 Equipo
 
 Desarrollado por el equipo de Itegra para Los Molinos.
-
----
-
-⚡ **Desarrollado con React + Vite para máximo rendimiento**

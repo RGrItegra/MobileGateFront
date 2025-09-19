@@ -125,9 +125,6 @@ Utilizamos [Conventional Commits](https://www.conventionalcommits.org/) para man
 - `✅ test:` - Agregar o corregir tests
 - `🔧 chore:` - Tareas de mantenimiento
 
-## 📄 Licencia
-
-Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para más detalles.
 
 ## 👥 Equipo
 

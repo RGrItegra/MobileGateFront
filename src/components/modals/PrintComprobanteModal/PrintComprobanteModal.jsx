@@ -2,6 +2,7 @@ import React from 'react';
 import '../../../styles/modals/PrintComprobanteModal/PrintComprobanteModal.css';
 
 const PrintComprobanteModal = ({ isOpen, onAccept, onCancel }) => {
+  console.log('PrintComprobanteModal rendered with isOpen:', isOpen);
   if (!isOpen) return null;
 
   const handleOverlayClick = (e) => {
@@ -29,13 +30,13 @@ const PrintComprobanteModal = ({ isOpen, onAccept, onCancel }) => {
             className="swal2-cancel swal2-styled" 
             onClick={onCancel}
           >
-            Cancelar
+            No
           </button>
           <button 
             className="swal2-confirm swal2-styled" 
             onClick={onAccept}
           >
-            Aceptar
+            Sí
           </button>
         </div>
       </div>

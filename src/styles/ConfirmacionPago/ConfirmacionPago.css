@@ -144,7 +144,8 @@
 
 
 
-/* Popup para facturación electrónica */
+/* Popup para facturación electrónica - COMENTADO PARA EVITAR CONFLICTOS */
+/*
 .popup-overlay {
   position: fixed;
   top: 0;
@@ -158,7 +159,9 @@
   animation: fadeIn 0.3s ease-out;
   background-color: rgba(0, 0, 0, 0.5);
 }
+*/
 
+/*
 .popup-content {
   background: white;
   padding: 30px;
@@ -189,6 +192,7 @@
   padding: 10px 20px;
   margin: 0;
 }
+*/
 
 /* Botón volver - no sticky */
 .back-button-container {

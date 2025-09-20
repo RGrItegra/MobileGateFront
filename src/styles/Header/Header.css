@@ -12,6 +12,37 @@ body {
   color: rgb(0, 0, 0);
   width: 100%;
   margin-bottom: 1rem;
+  position: relative;
+}
+
+/* Ocultar elementos del header cuando el menú está abierto */
+.header.menu-open .logo,
+.header.menu-open .header-text,
+.header.menu-open .hamburger-btn {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* Botón hamburguesa */
+.hamburger-btn {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  z-index: 1001;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hamburger-btn:hover {
+  color: #555;
 }
 
 .logo {
@@ -96,5 +127,125 @@ body {
   .mainheading {
     font-size: 1.8rem;
     margin-top: -5px;
+  }
+}
+
+/* Overlay del menú */
+.menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Menú lateral */
+.sidebar-menu {
+  position: fixed;
+  top: 0;
+  left: -280px;
+  width: 280px;
+  height: 100%;
+  background-color: #ffffff;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  transition: left 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-menu.open {
+  left: 0;
+}
+
+/* Header del menú */
+.menu-header {
+  padding: 30px 20px 20px;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f8f9fa;
+}
+
+.menu-logo {
+  height: 60px;
+  filter: grayscale(100%) brightness(0.4);
+}
+
+/* Navegación del menú */
+.menu-nav {
+  flex: 1;
+  padding: 20px 0;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 15px 20px;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 16px;
+  color: #333;
+}
+
+.menu-item:hover {
+  background-color: #f5f5f5;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-btn:hover {
+  color: #333;
+}
+
+.menu-item:active {
+  background-color: #fdd73f;
+}
+
+.menu-icon {
+  margin-right: 15px;
+  font-size: 18px;
+  width: 24px;
+  text-align: center;
+}
+
+.menu-text {
+  font-weight: 500;
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* Responsive adjustments */
+@media (min-width: 768px) {
+  .hamburger-btn {
+    left: 20px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hamburger-btn {
+    left: 22px;
   }
 }

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Header from '../Header/Header';
 import Loading from '../Loading/Loading';
+import FacturaElectronicaModal from '../modals/FacturaElectronicaModal/FacturaElectronicaModal';
+import PrintComprobanteModal from '../modals/PrintComprobanteModal/PrintComprobanteModal';
 import '../../styles/ConfirmacionPago/ConfirmacionPago.css';
 
 const ConfirmacionPago = () => {
@@ -10,6 +12,12 @@ const ConfirmacionPago = () => {
   const [showFacturaModal, setShowFacturaModal] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showPrintModal, setShowPrintModal] = useState(false);
+  
+  // Monitorear cambios en showPrintModal
+  useEffect(() => {
+    console.log('showPrintModal changed to:', showPrintModal);
+  }, [showPrintModal]);
   
   // Obtener datos de confirmación desde la navegación
   const confirmationData = location.state?.confirmationData || {
@@ -23,21 +31,48 @@ const ConfirmacionPago = () => {
     setShowFacturaModal(true);
   };
 
-  const handleFacturaResponse = (wantsFactura) => {    console.log('handleFacturaResponse iniciado');
+  // Función para manejar el cierre del modal de factura electrónica
+  const handleFacturaClose = () => {
+    setShowFacturaModal(false);
+    navigate('/welcome');
+  };
+
+  // Función para continuar después del modal de factura electrónica
+  const handleFacturaContinue = () => {
+    console.log('handleFacturaContinue called');
     setShowFacturaModal(false);
     setLoading(true);
     
     // Simular procesamiento de pago
     setTimeout(() => {
+      console.log('Payment processing completed');
       setLoading(false);
       setPaymentSuccess(true);
       
-      // Mostrar mensaje de éxito y luego navegar al welcome
+      // Mostrar modal de impresión después del pago exitoso
       setTimeout(() => {
-        console.log('Navegando a welcome');
-        navigate('/welcome');
+        console.log('Setting showPrintModal to true');
+        setShowPrintModal(true);
       }, 2000);
     }, 3000);
+  };
+
+  // Función para manejar "Sí" en el modal de impresión
+  const handlePrintYes = () => {
+    console.log('Usuario eligió imprimir factura');
+    setShowPrintModal(false);
+    setTimeout(() => {
+      navigate('/welcome');
+    }, 500);
+  };
+
+  // Función para manejar "No" en el modal de impresión
+  const handlePrintNo = () => {
+    console.log('Usuario eligió no imprimir factura');
+    setShowPrintModal(false);
+    setTimeout(() => {
+      navigate('/welcome');
+    }, 500);
   };
 
   const handleVolver = () => {
@@ -57,6 +92,14 @@ const ConfirmacionPago = () => {
           <h2 className="success-title">¡Pago Exitoso!</h2>
           <p className="success-message">Tu transacción ha sido procesada correctamente</p>
         </div>
+        
+        {/* Modal de impresión de factura */}
+        {console.log('Rendering PrintComprobanteModal with showPrintModal:', showPrintModal)}
+        <PrintComprobanteModal 
+          isOpen={showPrintModal}
+          onAccept={handlePrintYes}
+          onCancel={handlePrintNo}
+        />
       </div>
     );
   }
@@ -110,23 +153,19 @@ const ConfirmacionPago = () => {
       </div>
 
       {/* Modal de facturación electrónica */}
-      {showFacturaModal && (
-        <div className="popup-overlay">
-          <div className="popup-content">
-            <h3>Facturación Electrónica</h3>
-            <p>¿Desea recibir factura electrónica?</p>
-            
-            <div className="popup-button-group">
-              <button className="btn" onClick={() => handleFacturaResponse(true)}>
-                SÍ
-              </button>
-              <button className="btn" onClick={() => handleFacturaResponse(false)}>
-                NO
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <FacturaElectronicaModal 
+        isOpen={showFacturaModal}
+        onClose={handleFacturaClose}
+        onContinue={handleFacturaContinue}
+      />
+
+      {/* Modal de impresión de factura */}
+      {console.log('Rendering PrintComprobanteModal with showPrintModal:', showPrintModal)}
+      <PrintComprobanteModal 
+        isOpen={showPrintModal}
+        onAccept={handlePrintYes}
+        onCancel={handlePrintNo}
+      />
     </div>
   );
 };

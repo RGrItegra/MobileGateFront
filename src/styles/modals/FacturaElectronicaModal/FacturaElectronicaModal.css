@@ -32,7 +32,6 @@
   border-radius: 0.3125em;
   width: 95%;
   max-width: 32em;
-  padding: 0;
   box-shadow: 0 0 1.25em rgba(0, 0, 0, 0.15);
   text-align: center;
   position: relative;
@@ -206,10 +205,297 @@
   box-shadow: 0 0 0 3px rgba(112, 102, 224, 0.5);
 }
 
+/* Estilos mejorados basados en FrontMobilePayment-main */
+
+/* Overlay del modal */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0; 
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1002;
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Contenido del modal */
+.popup-content {
+  background-color: white;
+  border-radius: 12px;
+  width: 95%;
+  max-width: 420px;
+  padding: 25px;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  position: relative;
+}
+
+/* Título del modal */
+.popup-content h3 {
+  font-size: 1.1rem;
+  font-weight: 800;
+  text-align: center;
+  color: #333;
+  border-bottom: 2px solid #fdd73f;
+  margin-bottom: 20px;
+  padding: 15px;
+}
+
+.popup-content p {
+  color: #34495e;
+  font-size: 1.1em;
+  line-height: 1.6;
+  margin-bottom: 1.5em;
+  text-align: center;
+  padding: 5px;
+}
+
+/* Grupo de botones */
+.popup-button-group {
+  display: flex;
+  gap: 15px;
+  justify-content: space-between;
+  padding: 15px;
+}
+
+.popup-button-group .btn {
+  flex: 1;
+  min-width: auto;
+  padding: 12px 5px;
+  border: 2px solid #e0e0e0;
+  background-color: transparent;
+  color: #555;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.popup-button-group .btn-outline {
+  background: transparent;
+  color: #555;
+  border-color: #e0e0e0;
+}
+
+.popup-button-group .btn-outline:hover {
+  background-color: #f5f5f5;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Botón primario (amarillo) */
+.popup-button-group .btn-primary {
+  background-color: #FFD700 !important;
+  color: #333 !important;
+  border-color: #FFD700;
+}
+
+.popup-button-group .btn-primary:hover {
+  background-color: #F0C800 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Botón secundario */
+.popup-button-group .btn:hover {
+  background-color: #f5f5f5;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.popup-button-group .btn:active {
+  transform: translateY(0);
+}
+
+/* Formulario de factura */
+.form-fac {
+  margin: 20px auto;
+  font-size: 1em;
+  max-width: 300px;
+}
+
+.select-content,
+.nrodoc-content {
+  margin-bottom: 1em;
+  display: grid;
+  grid-template-columns: 1fr;
+  row-gap: 5px;
+}
+
+.select-content label,
+.nrodoc-content label {
+  display: block;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 0.5em;
+  font-size: 0.9rem;
+  text-align: left;
+}
+
+.select-content select,
+.nrodoc-content input {
+  font-size: 1.2em;
+  padding: 10px;
+  border-radius: 5px;
+  border: solid 1px #ccc;
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+  background: white;
+  color: #2c3e50;
+}
+
+.form-fac select, 
+.form-fac input[type="text"] {
+  font-size: 1.2em;
+  padding: 10px;
+  border-radius: 5px;
+  border: solid 1px #ccc;
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+
+.form-fac select {
+  width: 100%;
+}
+
+.select-content select:focus,
+.nrodoc-content input:focus,
+.form-fac select:focus,
+.form-fac input[type="text"]:focus {
+  outline: none;
+  border-color: #fdd73f;
+  box-shadow: 0 0 0 2px rgba(253, 215, 63, 0.2);
+}
+
+.select-content select:disabled,
+.nrodoc-content input:disabled {
+  background: #f8f9fa;
+  color: #6c757d;
+  cursor: not-allowed;
+  border-color: #dee2e6;
+}
+
+.popup-cancel-button {
+  padding: 15px;
+}
+
+/* Botón cancelar */
+.popup-cancel-button .btn,
+.popup-cancel-button .btn-cancel {
+  width: calc(100% + 15px);
+  margin-left: -7.5px;
+  padding: 12px 5px;
+  border: 2px solid #e0e0e0;
+  background-color: transparent;
+  color: #555;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.popup-cancel-button .btn:hover,
+.popup-cancel-button .btn-cancel:hover {
+  background-color: #f5f5f5;
+  transform: translateY(-1px);
+}
+
+/* Animación de entrada */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Prevenir scroll del body cuando el modal está abierto */
+body.modal-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+}
+
 /* Responsive adjustments */
-@media (max-width: 768px) {
+@media (max-width: 480px) {
+  .popup-overlay {
+    padding: 0.5em;
+  }
+  
   .popup-content {
-    width: 90%;
+    width: 95%;
+    max-width: none;
+    margin: 0.5em;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  
+  .swal2-popup {
+    padding: 1em;
+  }
+  
+  .swal2-header {
+    padding: 0 1em;
+  }
+  
+  .swal2-icon {
+    width: 3.5em;
+    height: 3.5em;
+    margin: 0.8em auto 1.2em;
+  }
+  
+  .swal2-icon-content {
+    font-size: 2.5em;
+  }
+  
+  .swal2-title {
+    font-size: 1.3em;
+    margin: 0 0 0.6em;
+  }
+  
+  .swal2-html-container {
+    font-size: 0.9em;
+    margin: 0.8em 1em 0.5em;
+  }
+  
+  .swal2-actions {
+    flex-direction: column;
+    gap: 0.5em;
+    margin: 1em auto 0;
+  }
+  
+  .swal2-styled {
+    width: 100%;
+    margin: 0.2em 0;
+    padding: 0.8em 1.2em;
+    font-size: 0.95em;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .popup-content {
+    width: 85%;
     margin: 1em;
   }
   
@@ -224,10 +510,25 @@
   }
   
   .swal2-title {
-    font-size: 1.5em;
+    font-size: 1.6em;
   }
   
   .swal2-html-container {
     font-size: 1em;
+  }
+  
+  .swal2-actions {
+    gap: 0.8em;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .popup-content {
+    width: 70%;
+    max-width: 28em;
+  }
+  
+  .swal2-title {
+    font-size: 1.75em;
   }
 }

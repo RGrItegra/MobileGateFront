@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLoading } from '../../contexts/LoadingContext';
 import Header from '../Header/Header';
-import FacturaElectronicaModal from '../modals/FacturaElectronicaModal/FacturaElectronicaModal';
 import '../../styles/Welcome/Welcome.css';
 
 const Welcome = () => {
@@ -19,8 +18,8 @@ const Welcome = () => {
       const placaRegex = /^[A-Za-z0-9]{6}$/;
       return placaRegex.test(value);
     } else {
-      // Código: 6 dígitos numéricos
-      const codigoRegex = /^[0-9]{6}$/;
+      // Código: 23 dígitos numéricos
+      const codigoRegex = /^[0-9]{23}$/;
       return codigoRegex.test(value);
     }
   };
@@ -33,7 +32,7 @@ const Welcome = () => {
       // Solo permitir letras y números, convertir a mayúsculas
       value = value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
     } else {
-      // Solo permitir números para código
+      // Solo permitir números para Ticket
       value = value.replace(/[^0-9]/g, '');
     }
     
@@ -98,15 +97,15 @@ const Welcome = () => {
           className={`type-btn ${inputType === 'codigo' ? 'active' : ''}`}
           onClick={() => handleTypeChange('codigo')}
         >
-          Código
+          Ticket
         </button>
       </div>
 
       <div className="search-container">
         <input 
           type="text" 
-          placeholder={inputType === 'placa' ? 'Ingrese su placa (ej: ABC123)' : 'Ingrese su código (ej: 123456)'}
-          maxLength={6}
+          placeholder={inputType === 'placa' ? 'Ingrese su placa (ej: ABC123)' : 'Ingrese su código de 23 dígitos'}
+          maxLength={inputType === 'codigo' ? 23 : 6}
           className="search-input"
           value={inputValue} 
           onChange={handleInputChange} 
@@ -122,18 +121,6 @@ const Welcome = () => {
         </button>
       </div>
 
-      {/* Botón facturación electrónica */}
-      <div className="billing-section">
-        <button className="eb-toggle-button" aria-label="Facturación electrónica" onClick={handleElectronicBilling}>
-          <span className="eb-toggle-text">Facturación Electronica</span>
-        </button>
-      </div>
-
-      {/* Modal de Facturación Electrónica */}
-      <FacturaElectronicaModal 
-        isOpen={showFacturaModal}
-        onClose={handleCloseFacturaModal}
-      />
     </div>
   );
 };

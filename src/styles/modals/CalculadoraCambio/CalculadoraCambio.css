@@ -1,0 +1,265 @@
+.calculadora-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.calculadora-modal {
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 95vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.calculadora-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.calculadora-header h2 {
+  margin: 0;
+  color: #1f2937;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.close-button:hover {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+.calculadora-content {
+  padding: 16px 24px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.total-section {
+  background: #f8fafc;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.total-label {
+  margin: 0 0 4px 0;
+  color: #6b7280;
+  font-size: 0.85rem;
+}
+
+.total-amount {
+  margin: 0;
+  color: #1f2937;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.input-section {
+  margin-bottom: 16px;
+}
+
+.input-section label {
+  display: block;
+  margin-bottom: 8px;
+  color: #374151;
+  font-weight: 500;
+}
+
+.dinero-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.dinero-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.billetes-section {
+  margin-bottom: 16px;
+}
+
+.billetes-label {
+  margin: 0 0 8px 0;
+  color: #374151;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.billetes-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.billete-button {
+  padding: 10px 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  background: white;
+  color: #374151;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.85rem;
+}
+
+.billete-button:hover {
+  border-color: #3b82f6;
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.billete-button:active {
+  transform: translateY(1px);
+}
+
+.completo-button {
+  background: #10b981;
+  color: white;
+  border-color: #10b981;
+}
+
+.completo-button:hover {
+  background: #059669;
+  border-color: #059669;
+  color: white;
+}
+
+.cambio-section {
+  background: #f0f9ff;
+  padding: 12px;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.cambio-label {
+  margin: 0 0 8px 0;
+  color: #0369a1;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.cambio-amount {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #0c4a6e;
+}
+
+.cambio-amount.insuficiente {
+  color: #dc2626;
+  background: #fef2f2;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #fecaca;
+}
+
+.calculadora-footer {
+  display: flex;
+  gap: 12px;
+  padding: 20px 24px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.btn-cancelar {
+  flex: 1;
+  padding: 12px 24px;
+  border: 2px solid #d1d5db;
+  border-radius: 8px;
+  background: white;
+  color: #374151;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-cancelar:hover {
+  border-color: #9ca3af;
+  background: #f9fafb;
+}
+
+.btn-confirmar {
+  flex: 1;
+  padding: 12px 24px;
+  border: 2px solid #3b82f6;
+  border-radius: 8px;
+  background: #3b82f6;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-confirmar:hover:not(:disabled) {
+  background: #2563eb;
+  border-color: #2563eb;
+}
+
+.btn-confirmar:disabled {
+  background: #d1d5db;
+  border-color: #d1d5db;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+  .calculadora-modal {
+    width: 95%;
+    margin: 10px;
+  }
+  
+  .billetes-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .calculadora-footer {
+    flex-direction: column;
+  }
+}

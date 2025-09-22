@@ -4,6 +4,7 @@ import Header from '../Header/Header';
 import Loading from '../Loading/Loading';
 import FacturaElectronicaModal from '../modals/FacturaElectronicaModal/FacturaElectronicaModal';
 import PrintComprobanteModal from '../modals/PrintComprobanteModal/PrintComprobanteModal';
+import CalculadoraCambio from '../modals/CalculadoraCambio/CalculadoraCambio';
 import '../../styles/ConfirmacionPago/ConfirmacionPago.css';
 
 const ConfirmacionPago = () => {
@@ -13,6 +14,7 @@ const ConfirmacionPago = () => {
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showPrintModal, setShowPrintModal] = useState(false);
+  const [showCalculadoraModal, setShowCalculadoraModal] = useState(false);
   
   // Monitorear cambios en showPrintModal
   useEffect(() => {
@@ -28,7 +30,7 @@ const ConfirmacionPago = () => {
   };
 
   const handleConfirmarPago = () => {
-    setShowFacturaModal(true);
+    setShowCalculadoraModal(true);
   };
 
   // Función para manejar el cierre del modal de factura electrónica
@@ -75,8 +77,25 @@ const ConfirmacionPago = () => {
     }, 500);
   };
 
-  const handleVolver = () => {
-    navigate('/welcome');
+  const handleCalcular = () => {
+    setShowCalculadoraModal(true);
+  };
+
+  const handleCalculadoraClose = () => {
+    setShowCalculadoraModal(false);
+  };
+
+  const handleCalculadoraConfirm = (paymentData) => {
+    console.log('Iniciando procesamiento de pago:', paymentData);
+    setShowCalculadoraModal(false);
+    setLoading(true);
+    
+    // Simular procesamiento asíncrono del pago
+    setTimeout(() => {
+      console.log('Procesamiento de pago completado');
+      setLoading(false);
+      setShowFacturaModal(true);
+    }, 2000); // 2 segundos de procesamiento
   };
 
   if (loading) {
@@ -145,12 +164,7 @@ const ConfirmacionPago = () => {
         </button>
       </div>
 
-      {/* Botón volver - no sticky */}
-      <div className="back-button-container">
-        <button className="back-button" onClick={handleVolver}>
-          Volver
-        </button>
-      </div>
+
 
       {/* Modal de facturación electrónica */}
       <FacturaElectronicaModal 
@@ -165,6 +179,14 @@ const ConfirmacionPago = () => {
         isOpen={showPrintModal}
         onAccept={handlePrintYes}
         onCancel={handlePrintNo}
+      />
+
+      {/* Modal de calculadora de cambio */}
+      <CalculadoraCambio 
+        isOpen={showCalculadoraModal}
+        onClose={handleCalculadoraClose}
+        onConfirm={handleCalculadoraConfirm}
+        totalAmount={confirmationData.amount}
       />
     </div>
   );

@@ -241,7 +241,6 @@
   text-align: center;
   color: #333;
   border-bottom: 2px solid #fdd73f;
-  margin-bottom: 20px;
   padding: 15px;
 }
 
@@ -249,9 +248,8 @@
   color: #34495e;
   font-size: 1.1em;
   line-height: 1.6;
-  margin-bottom: 1.5em;
   text-align: center;
-  padding: 5px;
+  padding: 15px;
 }
 
 /* Grupo de botones */

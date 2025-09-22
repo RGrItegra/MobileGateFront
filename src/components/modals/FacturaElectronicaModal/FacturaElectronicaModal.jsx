@@ -179,11 +179,7 @@ const FacturaElectronicaModal = ({
             </div>
         )}
 
-        <div className="popup-cancel-button">
-            <button className="btn btn-cancel" onClick={handleCancelButton}>
-              Cancelar
-            </button>
-        </div>
+        
       </div>
     </div>
   );

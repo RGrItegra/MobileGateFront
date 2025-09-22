@@ -105,7 +105,7 @@ const CalculadoraCambio = ({ isOpen, onClose, onConfirm, totalAmount }) => {
 
           {dineroEntregado && (
             <div className="cambio-section">
-              <p className="cambio-label">Cambio a devolver:</p>
+              <p className="cambio-label">Total a devolver:</p>
               <p className={`cambio-amount ${cambio < 0 ? 'insuficiente' : ''}`}>
                 {cambio < 0 ? 'Dinero insuficiente' : formatCurrency(cambio)}
               </p>

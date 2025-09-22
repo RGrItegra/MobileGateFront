@@ -40,57 +40,60 @@ getUserUUID();
  * @param {string} username - Nombre de usuario
  * @param {string} password - Contraseña del usuario
  * @returns {Promise} - Promesa con la respuesta del servidor
- */
-export const loginUser = async (username, password) => {
+ */export const loginUser = async (username, password) => {
   try {
-    // Obtener el UUID del dispositivo
     const deviceUuid = getUserUUID();
-    
-    // Preparar los datos en el formato requerido por el backend
-    const loginData = {
-      usr_name: username,
-      usr_passwd: password,
-      devUuid: deviceUuid
-    };
 
-    // Realizar la petición al backend usando fetch
-    const response = await fetch(`${API_URL}/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(loginData)
+    //  Login interno
+    const loginData = { usr_name: username, usr_passwd: password, devUuid: deviceUuid };
+
+    const response = await fetch(`${API_URL}/users/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(loginData),
     });
 
-    // Verificar si la respuesta es exitosa
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ message: 'Error de conexión' }));
+      const errorData = await response.json().catch(() => ({ message: "Error de conexión" }));
       throw new Error(errorData.message || `Error ${response.status}: ${response.statusText}`);
     }
 
-    // Obtener los datos de respuesta
     const userData = await response.json();
-    
-    // Guardar los datos del usuario en localStorage si hay token
-    if (userData && userData.token) {
-      localStorage.setItem('user', JSON.stringify(userData));
+
+    // Login externo 
+    const authResponse = await fetch(`${API_URL}/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ devUuid: deviceUuid }),
+    });
+
+    if (!authResponse.ok) {
+      throw new Error("Error autenticando en API externa");
     }
-    
-    return {
-      success: true,
-      user: userData
+
+    const externalData = await authResponse.json();
+
+    // 3. Guardar todo junto
+    const sessionData = {
+      ...userData,
+      external: externalData, 
     };
 
+    localStorage.setItem("user", JSON.stringify(sessionData));
+
+    return { success: true, user: sessionData };
   } catch (error) {
-    // Si es un error de red o fetch
     if (error instanceof TypeError) {
-      throw new Error('Error de conexión. Verifique su conexión a internet.');
+      throw new Error("Error de conexión. Verifique su conexión a internet.");
     }
-    
-    // Re-lanzar el error para que sea manejado por el componente
     throw error;
   }
 };
+
+
+
+
+
 
 /**
  * Función para cerrar sesión

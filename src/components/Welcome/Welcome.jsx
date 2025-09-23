@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLoading } from '../../contexts/LoadingContext';
+import { consultarTicket } from '../../services/ticketService';
 import Header from '../Header/Header';
+import ErrorModal from '../modals/ErrorModal/ErrorModal';
 import '../../styles/Welcome/Welcome.css';
 
 const Welcome = () => {
@@ -11,6 +13,7 @@ const Welcome = () => {
   const [inputValue, setInputValue] = useState('');
   const [isValid, setIsValid] = useState(false);
   const [showFacturaModal, setShowFacturaModal] = useState(false);
+  const [errorModal, setErrorModal] = useState({ isOpen: false, title: '', message: '' });
 
   const validateInput = (value, type) => {
     if (type === 'placa') {
@@ -49,10 +52,31 @@ const Welcome = () => {
   const handleContinue = async () => {
     if (isValid) {
       await withLoading(async () => {
-        // Simular tiempo de carga para mostrar la animación
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        // Navegar a la página de valor a pagar
-        navigate('/valor-a-pagar', { state: { inputType, inputValue } });
+        try {
+          // Realizar consulta al backend
+          const response = await consultarTicket(inputType, inputValue);
+          
+          if (response.success) {
+            // Navegar a la página de valor a pagar con los datos obtenidos
+            navigate('/valor-a-pagar', { 
+              state: { 
+                inputType, 
+                inputValue, 
+                paymentData: response.data 
+              } 
+            });
+          } else {
+            throw new Error('No se pudo obtener información del ticket/placa');
+          }
+        } catch (error) {
+          console.error('Error al consultar ticket:', error);
+          // Mostrar error al usuario usando el modal
+          setErrorModal({
+            isOpen: true,
+            title: 'Error de Consulta',
+            message: error.message
+          });
+        }
       });
     }
   };
@@ -69,6 +93,15 @@ const Welcome = () => {
 
   const handleCloseFacturaModal = () => {
     setShowFacturaModal(false);
+  };
+
+  const handleCloseErrorModal = () => {
+    setErrorModal({ isOpen: false, title: '', message: '' });
+  };
+
+  const handleRetryQuery = () => {
+    setErrorModal({ isOpen: false, title: '', message: '' });
+    handleContinue();
   };
 
   return (
@@ -120,6 +153,15 @@ const Welcome = () => {
           CONTINUAR
         </button>
       </div>
+
+      {/* Modal de Error */}
+      <ErrorModal
+        isOpen={errorModal.isOpen}
+        title={errorModal.title}
+        message={errorModal.message}
+        onClose={handleCloseErrorModal}
+        onRetry={handleRetryQuery}
+      />
 
     </div>
   );

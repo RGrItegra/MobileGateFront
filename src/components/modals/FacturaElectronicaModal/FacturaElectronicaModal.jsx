@@ -31,7 +31,7 @@ const FacturaElectronicaModal = ({
   // Función para buscar cliente por documento
   const fetchClientByDoc = async (tipoDcto, nroDcto) => {
     try {
-      const response = await fetch(`http://localhost:3001/api/client/${tipoDcto}/${nroDcto}`);
+      const response = await fetch(`http://localhost:3000/api/client/${tipoDcto}/${nroDcto}`);
       if (response.ok) {
         const data = await response.json();
         return data;

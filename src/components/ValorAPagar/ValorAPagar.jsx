@@ -7,10 +7,10 @@ import '../../styles/ValorAPagar/ValorAPagar.css';
 const ValorAPagar = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { inputType, inputValue } = location.state || {};
+  const { inputType, inputValue, paymentData: backendData } = location.state || {};
   
-  // Datos simulados del pago basados en las imágenes
-  const [paymentData] = useState({
+  // Usar datos del backend si están disponibles, sino usar datos simulados como fallback
+  const [paymentData] = useState(backendData || {
     placa: inputValue || 'JSS913',
     horaIngreso: '12:57',
     duracionEstadia: '3d 3h 32m',

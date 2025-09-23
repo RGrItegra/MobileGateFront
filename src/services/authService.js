@@ -47,31 +47,30 @@ getUserUUID();
     //  Login interno
     const loginData = { usr_name: username, usr_passwd: password, devUuid: deviceUuid };
 
-    const response = await fetch(`${API_URL}/users/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(loginData),
-    });
+    const [response, AuthResponse] = await Promise.all([
+      fetch(`${API_URL}/users/login`,{
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(loginData),
+      }),
 
+      fetch(`${API_URL}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ devUuid: deviceUuid }),
+      })
+    ]) 
+  
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({ message: "Error de conexión" }));
       throw new Error(errorData.message || `Error ${response.status}: ${response.statusText}`);
     }
 
-    const userData = await response.json();
-
-    // Login externo 
-    const authResponse = await fetch(`${API_URL}/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ devUuid: deviceUuid }),
-    });
-
-    if (!authResponse.ok) {
+    if (!AuthResponse.ok) {
       throw new Error("Error autenticando en API externa");
     }
 
-    const externalData = await authResponse.json();
+    const [userData,externalData] = await Promise.all([response.json(), AuthResponse.json()]);
 
     // 3. Guardar todo junto
     const sessionData = {
@@ -89,11 +88,6 @@ getUserUUID();
     throw error;
   }
 };
-
-
-
-
-
 
 /**
  * Función para cerrar sesión

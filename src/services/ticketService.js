@@ -1,7 +1,8 @@
 // Servicio para manejar las consultas de tickets y placas
 // Este archivo contiene funciones para consultar información de pagos
 
-import { getCurrentUser, getUserUUID } from './authService';
+import { getCurrentUser } from './authService';
+
 
 // URL base para las peticiones
 const API_URL = localStorage.getItem('serverUrl') || 'http://localhost:3000';
@@ -15,7 +16,9 @@ const API_URL = localStorage.getItem('serverUrl') || 'http://localhost:3000';
 export const consultarTicket = async (inputType, inputValue) => {
   try {
     // Obtener datos del usuario autenticado
+    console.log("[FRONT] Iniciando consultarTicket...");
     const currentUser = getCurrentUser();
+    console.log("[FRONT] currentUser obtenido:", currentUser);
     if (!currentUser || !currentUser.external || !currentUser.external.token) {
       throw new Error('Usuario no autenticado. Por favor, inicie sesión nuevamente.');
     }
@@ -23,8 +26,7 @@ export const consultarTicket = async (inputType, inputValue) => {
     // Preparar los datos para la consulta
     const consultaData = {
       ticket: inputValue,
-      type: inputType === 'placa' ? 'plate' : 'ticket',
-      uuid: getUserUUID()
+      type: inputType === 'placa' ? 'LP' : 'ticket',
     };
 
     console.log('Consultando ticket:', consultaData);
@@ -58,19 +60,22 @@ export const consultarTicket = async (inputType, inputValue) => {
     console.log('Respuesta del backend:', data);
     
     // Transformar los datos del backend al formato esperado por el frontend
-    return {
-      success: true,
-      data: {
-        placa: inputValue,
-        horaIngreso: data.entryTime || '12:57',
-        duracionEstadia: data.duration || '3d 3h 32m',
-        costoParqueadero: data.parkingCost || data.amount || 500,
-        totalAPagar: data.totalAmount || data.amount || 500,
-        procesamiento: data.processingFee || 0,
-        // Datos adicionales que puedan venir del backend
-        ...data
-      }
-    };
+return {
+  success: true,
+  data: {
+    placa: inputValue,
+    totalAPagar: data.price?.amount ?? 0,
+    totalNeto: data.netPrice?.amount ?? 0,
+    ingresos: data.turnover?.amount ?? 0,
+    ingresosNetos: data.netTurnover?.amount ?? 0,
+    numeroTarifa: data.rateNumber ?? 0,
+    fechaFin: data.dateTimeEnd ?? '-',
+    horaFin: data.rateEnd ?? '-',
+    reembolsos: data.refounds ?? [],
+    // Puedes agregar todos los campos originales que necesites
+    ...data
+  }
+};
   } catch (error) {
     console.error('Error en consultarTicket:', error);
     
@@ -100,12 +105,11 @@ export const consultarEstadoTicket = async (inputType, inputValue) => {
     // Preparar los datos para la consulta
     const consultaData = {
       ticket: inputValue,
-      type: inputType === 'placa' ? 'plate' : 'ticket',
-      uuid: currentUser.devUuid || currentUser.uuid
+      type: inputType === 'placa' ? 'LP' : 'ticket',
     };
 
     // Realizar la consulta al endpoint /ticket/status
-    const response = await fetch(`${API_URL}/ticket/status`, {
+    const response = await fetch(`${API_URL}/ticket/status/short`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -10,25 +10,23 @@ import '../../styles/ConfirmacionPago/ConfirmacionPago.css';
 const ConfirmacionPago = () => {
   const location = useLocation();
   const navigate = useNavigate();
+
   const [showFacturaModal, setShowFacturaModal] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showPrintModal, setShowPrintModal] = useState(false);
   const [showCalculadoraModal, setShowCalculadoraModal] = useState(false);
   
+  //obtenemos los datos  que vienen de valor a pagar
+  const confirmationData = location.state?.paymentData;
+
   // Monitorear cambios en showPrintModal
   useEffect(() => {
-    console.log('showPrintModal changed to:', showPrintModal);
-  }, [showPrintModal]);
+    if(!confirmationData){
+      navigate('/welcome');
+    }
+  }, [confirmationData, navigate]);
   
-  // Obtener datos de confirmación desde la navegación
-  const confirmationData = location.state?.confirmationData || {
-    vehicleInfo: { plate: 'ABC 123' },
-    amount: 5000,
-    paymentMethod: 'EFECTIVO',
-    date: new Date().toLocaleDateString()
-  };
-
   const handleConfirmarPago = () => {
     setShowCalculadoraModal(true);
   };
@@ -98,6 +96,8 @@ const ConfirmacionPago = () => {
     }, 2000); // 2 segundos de procesamiento
   };
 
+  if(!confirmationData) return null;
+
   if (loading) {
     return <Loading />;
   }
@@ -139,7 +139,7 @@ const ConfirmacionPago = () => {
         
         <div className="summary-row2">
           <span>Estacionamiento</span>
-          <span>$5000</span>
+          <span>$ {confirmationData.total}</span>
         </div>
         
         <div className="summary-row2">
@@ -149,12 +149,12 @@ const ConfirmacionPago = () => {
         
         <div className="summary-row2">
           <span>Fecha:</span>
-          <span>{confirmationData.date}</span>
+          <span>{confirmationData.fecha}</span>
         </div>
         
         <div className="summary-row2 total-row">
           <span>Total</span>
-          <span>$5000 COP</span>
+          <span>{confirmationData.total}</span>
         </div>
       </div>
 
@@ -186,7 +186,7 @@ const ConfirmacionPago = () => {
         isOpen={showCalculadoraModal}
         onClose={handleCalculadoraClose}
         onConfirm={handleCalculadoraConfirm}
-        totalAmount={confirmationData.amount}
+        totalAmount={confirmationData.total}
       />
     </div>
   );

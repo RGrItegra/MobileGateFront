@@ -1,32 +1,85 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Header from '../Header/Header';
 import PrintComprobanteModal from '../modals/PrintComprobanteModal/PrintComprobanteModal';
 import '../../styles/ValorAPagar/ValorAPagar.css';
+import { consultarEstadoTicket, consultarTicket } from '../../services/ticketService';
 
 const ValorAPagar = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { inputType, inputValue, paymentData: backendData } = location.state || {};
-  
-  // Usar datos del backend si están disponibles, sino usar datos simulados como fallback
-  const [paymentData] = useState(backendData || {
-    placa: inputValue || 'JSS913',
-    horaIngreso: '12:57',
-    duracionEstadia: '3d 3h 32m',
-    costoParqueadero: 500,
-    totalAPagar: 500,
+  const { inputType, inputValue, } = location.state || {};
+
+  // Estado para los datos de pago, mapeando solo los campos que necesitamos
+  const [paymentData, setPaymentData] = useState({
+    placa: inputValue || '',
+    horaIngreso: '',
+    duracionEstadia: '',
+    costoParqueadero: 0,
+    totalAPagar: 0,
     procesamiento: 0
   });
 
   // Estado para el modal de impresión
   const [showPrintModal, setShowPrintModal] = useState(false);
-  const [paymentCompleted, setPaymentCompleted] = useState(false);
+
+  const formatHour24 = (date) => {
+    if (!date) return '-';
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
+  }
+
+  const formatDuration = (start, end) => {
+    if (!start || !end) return '-';
+    const diffMs = end - start;
+    const diffMinsTotal = Math.floor(diffMs / (1000 * 60));
+    const diffDays = Math.floor(diffMinsTotal / (60 * 24));
+    const diffHrs = Math.floor((diffMinsTotal % (60 * 24)) / 60);
+    const diffMins = diffMinsTotal % 60;
+    return `${diffDays > 0 ? diffDays + 'd ' : ''}${diffHrs}h ${diffMins}m`;
+  };
 
   // Función para formatear la placa con espacios entre caracteres
   const formatPlaca = (placa) => {
     return placa.split('').join(' ');
   };
+
+   // Mapeo combinando ambas APIs
+  const mapBackendData = (rateData, statusData) => {
+    const dateTimeStart = statusData?.inputDate ? new Date(statusData.inputDate) : null;
+    const dateTimeEnd = rateData?.dateTimeEnd ? new Date(rateData.dateTimeEnd) : null;
+    const rateEnd = rateData?.rateEnd ? new Date(rateData.rateEnd) : null;
+
+    return {
+      placa: statusData?.plate || inputValue,
+      horaIngreso: formatHour24(dateTimeStart),
+      duracionEstadia: formatDuration(dateTimeStart, rateEnd || dateTimeEnd),
+      costoParqueadero: rateData?.price?.amount ?? 0,
+      totalAPagar: rateData?.turnover?.amount ?? 0,
+      procesamiento: 0
+    };
+  };
+
+  // Actualizamos los datos al recibir la info del backend
+  useEffect(() => {
+    const fetchPaymentData = async () => {
+      try {
+        const ticketRateResponse = await consultarTicket(inputType, inputValue);
+        const statusResponse = await consultarEstadoTicket(inputType, inputValue);
+
+        if(ticketRateResponse.success && statusResponse.success) {
+          setPaymentData(mapBackendData(ticketRateResponse.data, statusResponse.data));
+        }
+      }catch(error) {
+        console.error("Error al obtener el pago:", error)
+      }
+    };
+    if(inputValue){
+      fetchPaymentData();
+    }
+  }, [inputType, inputValue]);
+
 
   const handleContinuarPago = () => {
     // Navegar a la página de confirmación de pago
@@ -38,9 +91,9 @@ const ValorAPagar = () => {
       fecha: new Date().toLocaleDateString('es-CO'),
       total: paymentData.totalAPagar + paymentData.procesamiento
     };
-    
-    navigate('/confirmacion-pago', { 
-      state: { paymentData: confirmationData } 
+
+    navigate('/confirmacion-pago', {
+      state: { paymentData: confirmationData }
     });
   };
 
@@ -68,9 +121,9 @@ const ValorAPagar = () => {
 
       {/* Ilustración principal */}
       <div className="main-illustration">
-        <img 
-          src="/Recurso 37.png" 
-          alt="Mobile Payment Illustration" 
+        <img
+          src="/Recurso 37.png"
+          alt="Mobile Payment Illustration"
           className="payment-illustration"
         />
       </div>
@@ -100,7 +153,7 @@ const ValorAPagar = () => {
             <span className="detail-label">Total a pagar:</span>
             <span className="detail-value total-amount">$ {paymentData.totalAPagar}</span>
           </div>
-          
+
           {/* Nota de procesamiento */}
           <div className="processing-note">
             Incluye ${paymentData.procesamiento} por procesamiento de pago

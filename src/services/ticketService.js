@@ -132,3 +132,50 @@ export const consultarEstadoTicket = async (inputType, inputValue) => {
     throw error;
   }
 };
+
+/**
+ * Función para confirmar el pago de un ticket
+ * @param {string} ticket - Código o placa
+ * @param {string} type - Tipo (ej: 'LP')
+ * @param {number} amount - Monto pagado por el cliente
+ * @param {string} currencyCode - Código de moneda, por defecto 'COP'
+ * @returns {Promise} - Respuesta del backend
+ */
+
+export const confirmarPago = async(ticket,type,amount,currencyCode='COP')=>{
+  try {
+    const current = getCurrentUser();
+    if(!currentUser || !currentUser.external || !currentUser.external.token){
+      throw new Error('Usuario no autenticado. Por favor, inicie sesión nuevamente.');
+  }
+
+  const paymentData={
+    ticket,
+    type,
+    payment:{
+      amount,
+      currencyCode
+    }
+  };
+
+  const response = await fetch(`${API_URL}/ticket/payment`,{
+    method: 'POST',
+    headers:{
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${currentUser.external.token}`
+    },
+    body: JSON.stringify(paymentData)
+    });
+    if(!response.ok){
+      const errorData = await response.json().catch(() => ({ message: "Error  al procesar el pago "}));
+      throw new Error(errorData.message || `Error ${response.status}: ${response.statusText}`);
+  }
+  const data = await response.json();
+  console.log("[FRONT] Respuesta backend /payment:", data);
+
+  return {success:true, data};
+}catch(error){
+  console.error("Error en confirmarPago:", error);
+  throw error;
+}
+}; 

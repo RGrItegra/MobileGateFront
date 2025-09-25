@@ -78,7 +78,7 @@ getUserUUID();
       external: externalData, 
     };
 
-    localStorage.setItem("user", JSON.stringify(sessionData));
+    sessionStorage.setItem("user", JSON.stringify(sessionData));
 
     return { success: true, user: sessionData };
   } catch (error) {
@@ -93,7 +93,7 @@ getUserUUID();
  * Función para cerrar sesión
  */
 export const logoutUser = () => {
-  localStorage.removeItem('user');
+  sessionStorage.removeItem('user');
 };
 
 /**
@@ -101,7 +101,7 @@ export const logoutUser = () => {
  * @returns {Object|null} - Datos del usuario o null si no hay sesión
  */
 export const getCurrentUser = () => {
-  const userStr = localStorage.getItem('user');
+  const userStr = sessionStorage.getItem('user');
   if (!userStr) return null;
   
   try {

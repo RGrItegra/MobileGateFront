@@ -45,7 +45,7 @@ const CalculadoraCambio = ({ isOpen, onClose, onConfirm, totalAmount }) => {
   const handleConfirmar = () => {
     if (parseFloat(dineroEntregado) >= totalAmount) {
       const paymentData = {
-        total: totalAmount,
+        amount: totalAmount,
         entregado: parseFloat(dineroEntregado),
         cambio: cambio
       };

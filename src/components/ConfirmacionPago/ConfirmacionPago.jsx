@@ -5,6 +5,7 @@ import Loading from '../Loading/Loading';
 import FacturaElectronicaModal from '../modals/FacturaElectronicaModal/FacturaElectronicaModal';
 import PrintComprobanteModal from '../modals/PrintComprobanteModal/PrintComprobanteModal';
 import CalculadoraCambio from '../modals/CalculadoraCambio/CalculadoraCambio';
+import { confirmarPago } from '../../services/ticketService';
 import '../../styles/ConfirmacionPago/ConfirmacionPago.css';
 
 const ConfirmacionPago = () => {
@@ -83,18 +84,30 @@ const ConfirmacionPago = () => {
     setShowCalculadoraModal(false);
   };
 
-  const handleCalculadoraConfirm = (paymentData) => {
+  const handleCalculadoraConfirm = async (paymentData) => {
     console.log('Iniciando procesamiento de pago:', paymentData);
     setShowCalculadoraModal(false);
     setLoading(true);
-    
-    // Simular procesamiento asíncrono del pago
-    setTimeout(() => {
-      console.log('Procesamiento de pago completado');
+
+    try {
+      const result = await confirmarPago(
+        confirmationData.ticket,   // o confirmationData.placa según tu estructura
+        'LP',                     // tipo de pago, ajusta si es dinámico
+        Number(paymentData.amount),        // monto ingresado desde la calculadora
+        'COP'
+      );
+
+      console.log('Datos devueltos por la API:', result);
+      
       setLoading(false);
       setShowFacturaModal(true);
-    }, 2000); // 2 segundos de procesamiento
+    } catch (error) {
+      console.error('Error al confirmar pago:', error);
+      setLoading(false);
+      alert('Ocurrió un error al procesar el pago. Intenta nuevamente.');
+    }
   };
+
 
   if(!confirmationData) return null;
 

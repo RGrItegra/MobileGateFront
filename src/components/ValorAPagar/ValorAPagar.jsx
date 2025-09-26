@@ -13,6 +13,7 @@ const ValorAPagar = () => {
   // Estado para los datos de pago, mapeando solo los campos que necesitamos
   const [paymentData, setPaymentData] = useState({
     placa: inputValue || '',
+    nroTicket: '',
     horaIngreso: '',
     duracionEstadia: '',
     costoParqueadero: 0,
@@ -53,6 +54,7 @@ const ValorAPagar = () => {
 
     return {
       placa: statusData?.plate || inputValue,
+      nroTicket: statusData?.nroTicket || inputValue,
       horaIngreso: formatHour24(dateTimeStart),
       duracionEstadia: formatDuration(dateTimeStart, rateEnd || dateTimeEnd),
       costoParqueadero: rateData?.price?.amount ?? 0,
@@ -84,6 +86,7 @@ const ValorAPagar = () => {
   const handleContinuarPago = () => {
     // Navegar a la página de confirmación de pago
     const confirmationData = {
+      ticket: paymentData.nroTicket ,
       placa: paymentData.placa,
       estacionamiento: paymentData.totalAPagar,
       transaccionDigital: paymentData.procesamiento,

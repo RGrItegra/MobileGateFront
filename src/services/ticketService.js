@@ -43,7 +43,7 @@ export const consultarTicket = async (inputType, inputValue) => {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({ message: "Error de conexión con el servidor" }));
-      
+
       // Manejar diferentes tipos de errores
       if (response.status === 401) {
         throw new Error('Sesión expirada. Por favor, inicie sesión nuevamente.');
@@ -52,37 +52,37 @@ export const consultarTicket = async (inputType, inputValue) => {
       } else if (response.status === 500) {
         throw new Error('Error interno del servidor. Contacte al equipo de backend.');
       }
-      
+
       throw new Error(errorData.message || `Error ${response.status}: ${response.statusText}`);
     }
 
     const data = await response.json();
     console.log('Respuesta del backend:', data);
-    
+
     // Transformar los datos del backend al formato esperado por el frontend
-return {
-  success: true,
-  data: {
-    placa: inputValue,
-    totalAPagar: data.price?.amount ?? 0,
-    totalNeto: data.netPrice?.amount ?? 0,
-    ingresos: data.turnover?.amount ?? 0,
-    ingresosNetos: data.netTurnover?.amount ?? 0,
-    numeroTarifa: data.rateNumber ?? 0,
-    fechaFin: data.dateTimeEnd ?? '-',
-    horaFin: data.rateEnd ?? '-',
-    reembolsos: data.refounds ?? [],
-    // Puedes agregar todos los campos originales que necesites
-    ...data
-  }
-};
+    return {
+      success: true,
+      data: {
+        placa: inputValue,
+        totalAPagar: data.price?.amount ?? 0,
+        totalNeto: data.netPrice?.amount ?? 0,
+        ingresos: data.turnover?.amount ?? 0,
+        ingresosNetos: data.netTurnover?.amount ?? 0,
+        numeroTarifa: data.rateNumber ?? 0,
+        fechaFin: data.dateTimeEnd ?? '-',
+        horaFin: data.rateEnd ?? '-',
+        reembolsos: data.refounds ?? [],
+        // Puedes agregar todos los campos originales que necesites
+        ...data
+      }
+    };
   } catch (error) {
     console.error('Error en consultarTicket:', error);
-    
+
     if (error instanceof TypeError) {
       throw new Error("Error de conexión. Verifique que el backend esté ejecutándose.");
     }
-    
+
     // Re-lanzar el error para que sea manejado por el componente
     throw error;
   }
@@ -142,40 +142,40 @@ export const consultarEstadoTicket = async (inputType, inputValue) => {
  * @returns {Promise} - Respuesta del backend
  */
 
-export const confirmarPago = async(ticket,type,amount,currencyCode='COP')=>{
+export const confirmarPago = async (ticket, type, amount, currencyCode = 'COP') => {
   try {
-    const current = getCurrentUser();
-    if(!currentUser || !currentUser.external || !currentUser.external.token){
+    const currentUser = getCurrentUser();
+    if (!currentUser || !currentUser.external || !currentUser.external.token) {
       throw new Error('Usuario no autenticado. Por favor, inicie sesión nuevamente.');
-  }
-
-  const paymentData={
-    ticket,
-    type,
-    payment:{
-      amount,
-      currencyCode
     }
-  };
+    
+    const paymentData = {
+      ticket,
+      type,
+      payment: {
+        amount,
+        currencyCode
+      }
+    };
 
-  const response = await fetch(`${API_URL}/ticket/payment`,{
-    method: 'POST',
-    headers:{
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${currentUser.external.token}`
-    },
-    body: JSON.stringify(paymentData)
+    const response = await fetch(`${API_URL}/ticket/payment`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${currentUser.external.token}`
+      },
+      body: JSON.stringify(paymentData)
     });
-    if(!response.ok){
-      const errorData = await response.json().catch(() => ({ message: "Error  al procesar el pago "}));
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ message: "Error  al procesar el pago " }));
       throw new Error(errorData.message || `Error ${response.status}: ${response.statusText}`);
-  }
-  const data = await response.json();
-  console.log("[FRONT] Respuesta backend /payment:", data);
+    }
+    const data = await response.json();
+    console.log("[FRONT] Respuesta backend /payment:", data);
 
-  return {success:true, data};
-}catch(error){
-  console.error("Error en confirmarPago:", error);
-  throw error;
-}
+    return { success: true, data };
+  } catch (error) {
+    console.error("Error en confirmarPago:", error);
+    throw error;
+  }
 }; 

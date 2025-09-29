@@ -1,120 +1,127 @@
-// Servicio para manejar la autenticación de usuarios
-// Este archivo contiene funciones para iniciar sesión, cerrar sesión y verificar el estado de autenticación
-
-// URL base para las peticiones de autenticación
-// En un entorno real, esto vendría de variables de entorno o configuración
+// authService.js (frontend)
 const API_URL = localStorage.getItem('serverUrl') || 'http://localhost:3000';
 
-/**
- * Función para generar un UUID v4
- * @returns {string} - UUID generado
- */
-const generateUUID = () => {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+const generateUUID = () =>
+  'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
     const r = Math.random() * 16 | 0;
-    const v = c === 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
+    return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
   });
-};
 
-/**
- * Función para obtener el UUID del usuario actual o generar uno nuevo
- * @returns {string} - UUID del usuario
- */
 export const getUserUUID = () => {
   let uuid = localStorage.getItem('userUUID');
-  
   if (!uuid) {
     uuid = generateUUID();
     localStorage.setItem('userUUID', uuid);
   }
-  
   return uuid;
 };
 
-// Verificamos si hay un UUID al cargar la aplicación
-getUserUUID();
-
-/**
- * Función para iniciar sesión
- * @param {string} username - Nombre de usuario
- * @param {string} password - Contraseña del usuario
- * @returns {Promise} - Promesa con la respuesta del servidor
- */export const loginUser = async (username, password) => {
+export const loginUser = async (username, password) => {
   try {
     const deviceUuid = getUserUUID();
-
-    //  Login interno
     const loginData = { usr_name: username, usr_passwd: password, devUuid: deviceUuid };
 
-    const [response, AuthResponse] = await Promise.all([
-      fetch(`${API_URL}/users/login`,{
-        method: "POST",
+    // Ejecutar en paralelo (tu versión original)
+    const [response, authResponse] = await Promise.all([
+      fetch(`${API_URL}/users/login`, {
+        method: 'POST',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(loginData),
       }),
-
       fetch(`${API_URL}/auth/login`, {
-        method: "POST",
+        method: 'POST',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ devUuid: deviceUuid }),
       })
-    ]) 
-  
+    ]);
+
+    // Si el login interno falla: informar y salir (no seguimos)
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ message: "Error de conexión" }));
-      throw new Error(errorData.message || `Error ${response.status}: ${response.statusText}`);
+      let errMsg = `Error ${response.status}: ${response.statusText}`;
+      try {
+        const errBody = await response.json();
+        errMsg = errBody.message || errBody.error || JSON.stringify(errBody);
+      } catch (e) { /* ignore */ }
+      throw new Error(errMsg);
     }
 
-    if (!AuthResponse.ok) {
-      throw new Error("Error autenticando en API externa");
+    // Parse responses (no forzar ambos ok)
+    const userData = await response.json();
+    let externalData = null;
+    try {
+      externalData = await (authResponse.ok ? authResponse.json() : null);
+    } catch (e) {
+      console.warn('No se pudo parsear authResponse:', e);
     }
 
-    const [userData,externalData] = await Promise.all([response.json(), AuthResponse.json()]);
+    // ---- Extraer token interno (robusto a varias formas) ----
+    const internalToken =
+      userData?.token ||
+      userData?.data?.token ||
+      userData?.session?.sesToken ||
+      userData?.accessToken ||
+      null;
 
-    // 3. Guardar todo junto
+    if (!internalToken) {
+      console.error('Respuesta de /users/login no contiene token interno:', userData);
+      throw new Error('Respuesta de login inválida: falta token interno');
+    }
+
+    // Extraer token externo si existe (la API externa tiene distintas formas)
+    const externalToken =
+      externalData?.token ||
+      externalData?.token?.key ||
+      externalData?.key ||
+      externalData?.accessToken ||
+      null;
+
+    // Construir objeto de sesión (guardarlo SOLO en sessionStorage)
     const sessionData = {
-      ...userData,
-      external: externalData, 
+      token: internalToken,
+      session: userData.session || null,
+      userInfo: userData.user || userData,
+      device: userData.device || null,
+      fiscalConfig: userData.fiscalConfig || null,
+      externalToken: externalToken || null,
+      loggedAt: Date.now()
     };
 
-    sessionStorage.setItem("user", JSON.stringify(sessionData));
+    // Guardar en sessionStorage (se borra al cerrar pestaña)
+    sessionStorage.setItem('user', JSON.stringify(sessionData));
+
+    // Debug: mostrar respuestas en consola para verificar
+    console.log('[authService] userData:', userData);
+    console.log('[authService] externalData:', externalData);
+    console.log('[authService] sessionData guardada en sessionStorage:', sessionData);
 
     return { success: true, user: sessionData };
+
   } catch (error) {
     if (error instanceof TypeError) {
-      throw new Error("Error de conexión. Verifique su conexión a internet.");
+      throw new Error("Error de red o conexión");
     }
     throw error;
   }
 };
 
-/**
- * Función para cerrar sesión
- */
 export const logoutUser = () => {
   sessionStorage.removeItem('user');
 };
 
-/**
- * Función para obtener el usuario actual
- * @returns {Object|null} - Datos del usuario o null si no hay sesión
- */
 export const getCurrentUser = () => {
-  const userStr = sessionStorage.getItem('user');
-  if (!userStr) return null;
-  
   try {
-    return JSON.parse(userStr);
-  } catch (e) {
+    return JSON.parse(sessionStorage.getItem('user') || 'null');
+  } catch {
     return null;
   }
 };
 
-/**
- * Función para verificar si el usuario está autenticado
- * @returns {boolean} - true si está autenticado, false en caso contrario
- */
 export const isAuthenticated = () => {
-  return getCurrentUser() !== null;
+  const u = getCurrentUser();
+  return !!(u && u.token);
+};
+
+export const getAuthToken = () => {
+  const u = getCurrentUser();
+  return u?.token || null;
 };

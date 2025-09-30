@@ -1,4 +1,4 @@
-// AuthProvider.jsx (React)
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { getCurrentUser as getStoredUser, logoutUser as logoutStorage } from '../services/authService';
 

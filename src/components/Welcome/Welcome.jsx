@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLoading } from '../../contexts/LoadingContext';
-import { consultarTicket } from '../../services/ticketService';
+import { consultarTicket} from '../../services/ticketService';
 import Header from '../Header/Header';
 import ErrorModal from '../modals/ErrorModal/ErrorModal';
 import '../../styles/Welcome/Welcome.css';

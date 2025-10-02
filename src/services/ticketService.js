@@ -100,7 +100,6 @@ export const consultarEstadoTicket = async (inputType, inputValue) => {
     throw error;
   }
 };
-
 export const confirmarPago = async (ticket, type, amount, currencyCode = 'COP') => {
   try {
     const currentUser = getCurrentUser();
@@ -108,6 +107,7 @@ export const confirmarPago = async (ticket, type, amount, currencyCode = 'COP') 
       throw new Error('Usuario no autenticado. Por favor, inicie sesión nuevamente.');
     }
 
+    // 1. Pago en API externa
     const paymentData = {
       ticket,
       type,
@@ -124,12 +124,34 @@ export const confirmarPago = async (ticket, type, amount, currencyCode = 'COP') 
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ message: 'Error al procesar el pago' }));
+      const errorData = await response.json().catch(() => ({ message: 'Error al procesar el pago externo' }));
       throw new Error(errorData.message || `Error ${response.status}`);
     }
 
-    const data = await response.json();
-    return { success: true, data };
+    const externalData = await response.json();
+
+    const confirmData = {
+      ticket,
+      type
+    }
+    // 2. Confirmación interna (guardar en SQL Server)
+    const confirmResponse = await fetch(`${API_URL}/payment/payments/confirm`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${currentUser.token}`, //  Aquí usas tu JWT interno, no el externalToken
+      },
+      body: JSON.stringify(confirmData), 
+    });
+
+    if (!confirmResponse.ok) {
+      const errorData = await confirmResponse.json().catch(() => ({ message: 'Error al confirmar en BD interna' }));
+      throw new Error(errorData.message || `Error ${confirmResponse.status}`);
+    }
+
+    const internalData = await confirmResponse.json();
+
+    return { success: true, external: externalData, internal: internalData };
   } catch (error) {
     console.error('Error en confirmarPago:', error);
     throw error;

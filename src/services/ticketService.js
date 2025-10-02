@@ -41,6 +41,10 @@ export const consultarTicket = async (inputType, inputValue) => {
 
     const data = await response.json();
 
+    if(data.turnover?.amount){
+      sessionStorage.setItem("ticketAmount:" , data.turnover.amount);
+    }
+
     return {
       success: true,
       data: {
@@ -100,11 +104,17 @@ export const consultarEstadoTicket = async (inputType, inputValue) => {
     throw error;
   }
 };
+
 export const confirmarPago = async (ticket, type, amount, currencyCode = 'COP') => {
   try {
     const currentUser = getCurrentUser();
     if (!currentUser || !currentUser.externalToken) {
       throw new Error('Usuario no autenticado. Por favor, inicie sesión nuevamente.');
+    }
+
+    const storedAdmount = sessionStorage.getItem("ticketAmount:");
+    if(!storedAdmount){
+      throw new Error('No se encontró el monto del ticket en sessionStorage.');
     }
 
     // 1. Pago en API externa
@@ -132,7 +142,8 @@ export const confirmarPago = async (ticket, type, amount, currencyCode = 'COP') 
 
     const confirmData = {
       ticket,
-      type
+      type,
+      paymentAmount: storedAdmount,
     }
     // 2. Confirmación interna (guardar en SQL Server)
     const confirmResponse = await fetch(`${API_URL}/payment/payments/confirm`, {
@@ -150,6 +161,8 @@ export const confirmarPago = async (ticket, type, amount, currencyCode = 'COP') 
     }
 
     const internalData = await confirmResponse.json();
+
+    sessionStorage.removeItem("ticketAmount:");
 
     return { success: true, external: externalData, internal: internalData };
   } catch (error) {

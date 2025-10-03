@@ -28,8 +28,7 @@ function AppContent() {
   // Efecto para generar el UUID al cargar la aplicación
   useEffect(() => {
     // Obtener o generar el UUID del usuario
-    const uuid = getUserUUID();
-    console.log('UUID del usuario:', uuid);
+    getUserUUID();
   }, []);
 
   if (isLoading) {

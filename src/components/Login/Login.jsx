@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { loginUser } from '../../services/authService';
+import { loginUser, getUserUUID } from '../../services/authService';
 import UserDataModal from '../modals/UserDataModal/UserDataModal';
 import '../../styles/Login/Login.css';
 
@@ -15,6 +15,9 @@ const Login = () => {
     message: ''
   });
   const [isAuthenticating, setIsAuthenticating] = useState(false);
+  // Estado para modal de información de dispositivo
+  const [isDeviceModalOpen, setIsDeviceModalOpen] = useState(false);
+  const [deviceUuid, setDeviceUuid] = useState('');
   
   const navigate = useNavigate();
   const location = useLocation();
@@ -27,6 +30,12 @@ const Login = () => {
       navigate(from, { replace: true });
     }
   }, [isAuthenticated, navigate, location]);
+
+  // Efecto para obtener el UUID del dispositivo
+  useEffect(() => {
+    const uuid = getUserUUID();
+    setDeviceUuid(uuid);
+  }, []);
 
   // Función para mostrar modal
   const showModal = (type, message) => {
@@ -137,12 +146,32 @@ const Login = () => {
         </form>
       </div>
       
+      {/* Botón flotante de ayuda para mostrar UUID */}
+      <button 
+        type="button" 
+        className="help-button" 
+        onClick={() => setIsDeviceModalOpen(true)}
+        aria-label="Mostrar información del dispositivo"
+      >
+        ?
+      </button>
+      
+      {/* Modal de estados de login */}
       <UserDataModal
         isOpen={modal.isOpen}
         type={modal.type}
         message={modal.message}
         onClose={handleModalClose}
         showLoading={modal.type === 'loading'}
+      />
+
+      {/* Modal de información de dispositivo */}
+      <UserDataModal
+        isOpen={isDeviceModalOpen}
+        type={'info'}
+        message={`UUID del dispositivo: ${deviceUuid}`}
+        onClose={() => setIsDeviceModalOpen(false)}
+        showLoading={false}
       />
     </div>
   );

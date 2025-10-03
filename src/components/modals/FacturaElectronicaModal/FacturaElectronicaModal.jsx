@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { confirmarPagoInterno } from '../../../services/ticketService';
 import '../../../styles/modals/FacturaElectronicaModal/FacturaElectronicaModal.css';
 
 const FacturaElectronicaModal = ({ 
   isOpen, 
   onClose, 
-  onContinue 
+  onContinue ,
+  ticket,
+  type="LP"
 }) => {
   const [showPersonaModal, setShowPersonaModal] = useState(false);
   const [showResultModal, setShowResultModal] = useState(false);
@@ -48,8 +51,13 @@ const FacturaElectronicaModal = ({
     setShowPersonaModal(true);
   };
 
-  const handleNoClick = () => {
-    onContinue();
+  const handleNoClick = async () => {
+    try{
+      await confirmarPagoInterno(ticket,type);
+      onContinue();
+    } catch(error){
+      console.error('Error al confirmar pago interno:', error);
+    }
   };
 
   const handleCancelButton = () => {

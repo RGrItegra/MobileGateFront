@@ -20,7 +20,7 @@ const ConfirmacionPago = () => {
   
   //obtenemos los datos  que vienen de valor a pagar
   const confirmationData = location.state?.paymentData;
-
+  console.log("confirmationData:", confirmationData);
   // Monitorear cambios en showPrintModal
   useEffect(() => {
     if(!confirmationData){
@@ -131,6 +131,8 @@ const ConfirmacionPago = () => {
           isOpen={showPrintModal}
           onAccept={handlePrintYes}
           onCancel={handlePrintNo}
+          ticket={confirmationData?.ticket}
+          type="LP"
         />
       </div>
     );
@@ -184,6 +186,8 @@ const ConfirmacionPago = () => {
         isOpen={showFacturaModal}
         onClose={handleFacturaClose}
         onContinue={handleFacturaContinue}
+        ticket={confirmationData?.ticket} 
+  type="LP"
       />
 
       {/* Modal de impresión de factura */}

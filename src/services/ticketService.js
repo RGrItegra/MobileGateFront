@@ -105,6 +105,7 @@ export const consultarEstadoTicket = async (inputType, inputValue) => {
   }
 };
 
+// Función para confirmar el pago de un ticket
 export const confirmarPago = async (ticket, type, amount, currencyCode = 'COP') => {
   try {
     const currentUser = getCurrentUser();
@@ -140,33 +141,49 @@ export const confirmarPago = async (ticket, type, amount, currencyCode = 'COP') 
 
     const externalData = await response.json();
 
+    return { success: true, external: externalData};
+  } catch (error) {
+    console.error('Error en confirmarPago:', error);
+    throw error;
+  }
+};
+
+//confirmar pago en base de datos 
+export const confirmarPagoInterno = async(ticket,type) => {
+  try {
+    const currentUser = getCurrentUser();
+    if(!currentUser|| !currentUser.token){
+      throw new Error('Usuario no autenticado. Por favor, inicie sesión nuevamente.');
+    }
+      const storedAdmount = sessionStorage.getItem("ticketAmount:");
+      if (!storedAdmount) {
+      throw new Error('No se encontró el monto del ticket en sessionStorage.');
+    }
     const confirmData = {
       ticket,
       type,
       paymentAmount: storedAdmount,
-    }
-    // 2. Confirmación interna (guardar en SQL Server)
-    const confirmResponse = await fetch(`${API_URL}/payment/payments/confirm`, {
+    };
+
+      const confirmResponse = await fetch(`${API_URL}/payment/payments/confirm`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${currentUser.token}`, //  Aquí usas tu JWT interno, no el externalToken
+        'Authorization': `Bearer ${currentUser.token}`,
       },
-      body: JSON.stringify(confirmData), 
+      body: JSON.stringify(confirmData),
     });
 
-    if (!confirmResponse.ok) {
+      if (!confirmResponse.ok) {
       const errorData = await confirmResponse.json().catch(() => ({ message: 'Error al confirmar en BD interna' }));
       throw new Error(errorData.message || `Error ${confirmResponse.status}`);
     }
-
     const internalData = await confirmResponse.json();
-
     sessionStorage.removeItem("ticketAmount:");
 
-    return { success: true, external: externalData, internal: internalData };
-  } catch (error) {
-    console.error('Error en confirmarPago:', error);
+    return { success: true, internal: internalData };
+  }catch (error) {
+    console.error('Error en confirmarPagoInterno:', error);
     throw error;
   }
 };

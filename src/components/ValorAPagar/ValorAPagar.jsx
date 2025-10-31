@@ -10,7 +10,7 @@ const ValorAPagar = () => {
   const navigate = useNavigate();
   const { inputType, inputValue, rateResponse } = location.state || {};
 
-  console.info(rateResponse);
+  // console.info(rateResponse);
 
   // Estado para los datos de pago, mapeando solo los campos que necesitamos
   const [paymentData, setPaymentData] = useState({

@@ -55,7 +55,7 @@ const Welcome = () => {
         try {
           // Realizar consulta al backend
           const response = await consultarTicket(inputType, inputValue);
-          console.info(response);
+          // console.info(response);
           
           if (response.success) {
             sessionStorage.setItem("rate",JSON.stringify(response.data));

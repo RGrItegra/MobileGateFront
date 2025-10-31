@@ -41,7 +41,7 @@ const Header = () => {
           const errorData = await response.json();
           console.error("Error cerrando sesión en backend", errorData);
         } else {
-          console.log("Sesión cerrada correctamente en backend");
+          // console.log("Sesión cerrada correctamente en backend");
         }
       }
 

@@ -110,7 +110,7 @@ const ValorAPagar = () => {
   };
 
   const handlePrintAccept = () => {
-    console.log('Imprimiendo comprobante...');
+    // console.log('Imprimiendo comprobante...');
     setShowPrintModal(false);
     // Aquí se podría implementar la lógica de impresión real
     alert('Comprobante enviado a impresión');

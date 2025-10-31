@@ -49,7 +49,7 @@ const CalculadoraCambio = ({ isOpen, onClose, onConfirm, totalAmount }) => {
         entregado: parseFloat(dineroEntregado),
         cambio: cambio
       };
-      console.log('Pago confirmado:', paymentData);
+      // console.log('Pago confirmado:', paymentData);
       onConfirm(paymentData);
     }
   };

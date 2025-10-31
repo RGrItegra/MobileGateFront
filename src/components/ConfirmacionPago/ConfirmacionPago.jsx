@@ -20,7 +20,7 @@ const ConfirmacionPago = () => {
   
   //obtenemos los datos  que vienen de valor a pagar
   const confirmationData = location.state?.paymentData;
-  console.log("confirmationData:", confirmationData);
+  // console.log("confirmationData:", confirmationData);
   // Monitorear cambios en showPrintModal
   useEffect(() => {
     if(!confirmationData){
@@ -40,19 +40,19 @@ const ConfirmacionPago = () => {
 
   // Función para continuar después del modal de factura electrónica
   const handleFacturaContinue = () => {
-    console.log('handleFacturaContinue called');
+    // console.log('handleFacturaContinue called');
     setShowFacturaModal(false);
     setLoading(true);
     
     // Simular procesamiento de pago
     setTimeout(() => {
-      console.log('Payment processing completed');
+      // console.log('Payment processing completed');
       setLoading(false);
       setPaymentSuccess(true);
       
       // Mostrar modal de impresión después del pago exitoso
       setTimeout(() => {
-        console.log('Setting showPrintModal to true');
+        // console.log('Setting showPrintModal to true');
         setShowPrintModal(true);
       }, 2000);
     }, 3000);
@@ -60,7 +60,7 @@ const ConfirmacionPago = () => {
 
   // Función para manejar "Sí" en el modal de impresión
   const handlePrintYes = () => {
-    console.log('Usuario eligió imprimir factura');
+    // console.log('Usuario eligió imprimir factura');
     setShowPrintModal(false);
     setTimeout(() => {
       navigate('/welcome');
@@ -69,7 +69,7 @@ const ConfirmacionPago = () => {
 
   // Función para manejar "No" en el modal de impresión
   const handlePrintNo = () => {
-    console.log('Usuario eligió no imprimir factura');
+    // console.log('Usuario eligió no imprimir factura');
     setShowPrintModal(false);
     setTimeout(() => {
       navigate('/welcome');
@@ -85,7 +85,7 @@ const ConfirmacionPago = () => {
   };
 
   const handleCalculadoraConfirm = async (paymentData) => {
-    console.log('Iniciando procesamiento de pago:', paymentData);
+    // console.log('Iniciando procesamiento de pago:', paymentData);
     setShowCalculadoraModal(false);
     setLoading(true);
 
@@ -130,7 +130,7 @@ const ConfirmacionPago = () => {
         </div>
         
         {/* Modal de impresión de factura */}
-        {console.log('Rendering PrintComprobanteModal with showPrintModal:', showPrintModal)}
+        {/* console.log('Rendering PrintComprobanteModal with showPrintModal:', showPrintModal) */}
         <PrintComprobanteModal 
           isOpen={showPrintModal}
           onAccept={handlePrintYes}
@@ -195,7 +195,7 @@ const ConfirmacionPago = () => {
       />
 
       {/* Modal de impresión de factura */}
-      {console.log('Rendering PrintComprobanteModal with showPrintModal:', showPrintModal)}
+      {/* console.log('Rendering PrintComprobanteModal with showPrintModal:', showPrintModal) */}
       <PrintComprobanteModal 
         isOpen={showPrintModal}
         onAccept={handlePrintYes}

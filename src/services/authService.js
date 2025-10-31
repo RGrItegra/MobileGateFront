@@ -69,7 +69,7 @@ export const loginUser = async (username, password) => {
     // Guardar en sessionStorage reemplazando cualquier login anterior
     sessionStorage.setItem('user', JSON.stringify(sessionData));
 
-    console.log('[authService] Sesión iniciada:', sessionData);
+    // console.log('[authService] Sesión iniciada:', sessionData);
     return { success: true, user: sessionData };
 
   } catch (error) {

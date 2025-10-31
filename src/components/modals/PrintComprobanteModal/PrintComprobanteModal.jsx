@@ -2,7 +2,7 @@ import React from 'react';
 import '../../../styles/modals/PrintComprobanteModal/PrintComprobanteModal.css';
 
 const PrintComprobanteModal = ({ isOpen, onAccept, onCancel }) => {
-  console.log('PrintComprobanteModal rendered with isOpen:', isOpen);
+  // console.log('PrintComprobanteModal rendered with isOpen:', isOpen);
   if (!isOpen) return null;
 
   const handleOverlayClick = (e) => {

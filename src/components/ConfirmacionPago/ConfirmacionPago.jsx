@@ -90,14 +90,18 @@ const ConfirmacionPago = () => {
     setLoading(true);
 
     try {
-      const result = await confirmarPago(
+      /*const result = await confirmarPago(
         confirmationData.ticket,   // o confirmationData.placa según tu estructura
         'LP',                     // tipo de pago, ajusta si es dinámico
         Number(paymentData.amount),        // monto ingresado desde la calculadora
         'COP'
-      );
+      );*/
+      
 
-      console.log('Datos devueltos por la API:', result);
+      const current = {"amount":paymentData.amount,"ticket":confirmationData.ticket};
+      sessionStorage.setItem("currentPayment",JSON.stringify(current));
+
+      //console.log('Datos devueltos por la API:', result);
       
       setLoading(false);
       setShowFacturaModal(true);

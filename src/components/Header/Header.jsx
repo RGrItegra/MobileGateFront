@@ -17,6 +17,8 @@ const Header = () => {
     setIsMenuOpen(false);
   };
 
+  const closePath = process.env.API_URL || 'http://localhost:3000';
+
   const handleLogout = async () => {
     setIsMenuOpen(false);
 
@@ -27,7 +29,7 @@ const Header = () => {
       const token = parsed?.token;
 
       if (sesId) {
-        const response = await fetch(`http://localhost:3000/session/sessions/${sesId}/close`, {
+        const response = await fetch(`${closePath}/session/sessions/${sesId}/close`, {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",

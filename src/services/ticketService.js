@@ -2,10 +2,10 @@
 // Este archivo contiene funciones para consultar información de pagos
 
 import { getCurrentUser } from './authService';
-
+import { Navigate } from 'react-router-dom';
 
 // URL base para las peticiones
-const API_URL = localStorage.getItem('serverUrl') || 'http://localhost:3000';
+const API_URL = process.env.API_URL|| 'http://localhost:3000';
 
 /**
  * Función para consultar información de un ticket o placa
@@ -16,7 +16,8 @@ const API_URL = localStorage.getItem('serverUrl') || 'http://localhost:3000';
 export const consultarTicket = async (inputType, inputValue) => {
   try {
     const currentUser = getCurrentUser();
-    if (!currentUser || !currentUser.externalToken) {
+    if (!currentUser) {
+      window.location.href = "/login";
       throw new Error('Usuario no autenticado. Por favor, inicie sesión nuevamente.');
     }
 
@@ -29,7 +30,7 @@ export const consultarTicket = async (inputType, inputValue) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${currentUser.externalToken}`,
+        'Authorization': `Bearer ${currentUser.token}`,
       },
       body: JSON.stringify(consultaData),
     });
@@ -72,7 +73,8 @@ export const consultarTicket = async (inputType, inputValue) => {
 export const consultarEstadoTicket = async (inputType, inputValue) => {
   try {
     const currentUser = getCurrentUser();
-    if (!currentUser || !currentUser.externalToken) {
+    if (!currentUser) {
+      window.location.href = "/login";
       throw new Error('Usuario no autenticado. Por favor, inicie sesión nuevamente.');
     }
 
@@ -85,7 +87,7 @@ export const consultarEstadoTicket = async (inputType, inputValue) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${currentUser.externalToken}`,
+        'Authorization': `Bearer ${currentUser.token}`,
       },
       body: JSON.stringify(consultaData),
     });
@@ -106,10 +108,11 @@ export const consultarEstadoTicket = async (inputType, inputValue) => {
 };
 
 // Función para confirmar el pago de un ticket
-export const confirmarPago = async (ticket, type, amount, currencyCode = 'COP') => {
+export const confirmarPago = async (ticket, type, amount, rate, status, currencyCode = 'COP') => {
   try {
     const currentUser = getCurrentUser();
-    if (!currentUser || !currentUser.externalToken) {
+    if (!currentUser) {
+      window.location.href = "/login";
       throw new Error('Usuario no autenticado. Por favor, inicie sesión nuevamente.');
     }
 
@@ -123,13 +126,14 @@ export const confirmarPago = async (ticket, type, amount, currencyCode = 'COP') 
       ticket,
       type,
       payment: { amount, currencyCode },
-    };
-
+      rate: rate,
+      status: status
+    }
     const response = await fetch(`${API_URL}/ticket/payment`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${currentUser.externalToken}`,
+        'Authorization': `Bearer ${currentUser.token}`,
       },
       body: JSON.stringify(paymentData),
     });
@@ -153,6 +157,7 @@ export const confirmarPagoInterno = async(ticket,type) => {
   try {
     const currentUser = getCurrentUser();
     if(!currentUser|| !currentUser.token){
+      window.location.href = "/login";
       throw new Error('Usuario no autenticado. Por favor, inicie sesión nuevamente.');
     }
       const storedAdmount = sessionStorage.getItem("ticketAmount:");

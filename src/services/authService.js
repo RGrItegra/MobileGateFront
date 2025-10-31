@@ -1,5 +1,5 @@
 // authService.js (ajustado)
-const API_URL = localStorage.getItem('serverUrl') || 'http://localhost:3000';
+const API_URL = process.env.API_URL || 'http://localhost:3000';
 
 const generateUUID = () =>
   'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
@@ -36,7 +36,7 @@ export const loginUser = async (username, password) => {
     const userData = await response.json();
 
     // Luego login externo
-    let externalData = null;
+    /*let externalData = null;
     try {
       const authResponse = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
@@ -46,17 +46,15 @@ export const loginUser = async (username, password) => {
       if (authResponse.ok) externalData = await authResponse.json();
     } catch (e) {
       console.warn("No se pudo autenticar en API externa:", e);
-    }
+    }*/
 
     // Extraer tokens
     const internalToken = userData?.session?.sesToken || userData?.token || null;
-    const externalToken = externalData?.token || externalData?.key || null;
+   ///const externalToken = externalData?.token || externalData?.key || null;
 
     
 
     if (!internalToken) throw new Error("Login interno fallido: token no recibido");
-
-    
 
     const sessionData = {
       token: internalToken,
@@ -64,7 +62,7 @@ export const loginUser = async (username, password) => {
       userInfo: userData.user || userData,
       device: userData.device || null,
       fiscalConfig: userData.fiscalConfig || null,
-      externalToken,
+      //externalToken,
       loggedAt: Date.now(),
     };
 

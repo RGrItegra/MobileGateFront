@@ -55,14 +55,16 @@ const Welcome = () => {
         try {
           // Realizar consulta al backend
           const response = await consultarTicket(inputType, inputValue);
+          console.info(response);
           
           if (response.success) {
+            sessionStorage.setItem("rate",JSON.stringify(response.data));
             // Navegar a la página de valor a pagar con los datos obtenidos
             navigate('/valor-a-pagar', { 
               state: { 
                 inputType, 
                 inputValue, 
-                paymentData: response.data 
+                rateResponse: response.data
               } 
             });
           } else {

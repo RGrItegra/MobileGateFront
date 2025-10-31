@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Header from '../Header/Header';
 import PrintComprobanteModal from '../modals/PrintComprobanteModal/PrintComprobanteModal';
@@ -8,7 +8,9 @@ import { consultarEstadoTicket, consultarTicket } from '../../services/ticketSer
 const ValorAPagar = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { inputType, inputValue, } = location.state || {};
+  const { inputType, inputValue, rateResponse } = location.state || {};
+
+  console.info(rateResponse);
 
   // Estado para los datos de pago, mapeando solo los campos que necesitamos
   const [paymentData, setPaymentData] = useState({
@@ -63,24 +65,31 @@ const ValorAPagar = () => {
     };
   };
 
+  const hasFetched = useRef(false);
   // Actualizamos los datos al recibir la info del backend
   useEffect(() => {
-    const fetchPaymentData = async () => {
-      try {
-        const ticketRateResponse = await consultarTicket(inputType, inputValue);
-        const statusResponse = await consultarEstadoTicket(inputType, inputValue);
+    if (!hasFetched.current) {
 
-        if(ticketRateResponse.success && statusResponse.success) {
-          setPaymentData(mapBackendData(ticketRateResponse.data, statusResponse.data));
+      hasFetched.current = true;
+
+      const fetchPaymentData = async () => {
+        try {
+          //const ticketRateResponse = await consultarTicket(inputType, inputValue);
+          const statusResponse = await consultarEstadoTicket(inputType, inputValue);
+
+          if(statusResponse.success) {
+            
+            sessionStorage.setItem("status",JSON.stringify(statusResponse));
+
+            setPaymentData(mapBackendData(rateResponse, statusResponse.data));
+          }
+        }catch(error) {
+          console.error("Error al obtener el pago:", error)
         }
-      }catch(error) {
-        console.error("Error al obtener el pago:", error)
-      }
-    };
-    if(inputValue){
+      };
       fetchPaymentData();
     }
-  }, [inputType, inputValue]);
+  }, []);
 
 
   const handleContinuarPago = () => {

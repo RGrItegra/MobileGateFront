@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { confirmarPagoInterno } from '../../../services/ticketService';
+import { confirmarPago } from '../../../services/ticketService';
 import '../../../styles/modals/FacturaElectronicaModal/FacturaElectronicaModal.css';
 
 const FacturaElectronicaModal = ({ 
@@ -53,7 +53,11 @@ const FacturaElectronicaModal = ({
 
   const handleNoClick = async () => {
     try{
-      await confirmarPagoInterno(ticket,type);
+      const current = JSON.parse(sessionStorage.getItem("currentPayment"));
+      const rate = JSON.parse(sessionStorage.getItem("rate"));
+      const status = JSON.parse(sessionStorage.getItem("status"));
+
+      await confirmarPago(ticket, type, current.amount, rate, status);
       onContinue();
     } catch(error){
       console.error('Error al confirmar pago interno:', error);

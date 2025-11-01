@@ -19,7 +19,7 @@ const PrintComprobanteModal = ({ isOpen, onAccept, onCancel }) => {
         </div>
         
         <div className="print-modal-body">
-          <p>¿Desea imprimir su factura?</p>
+          <p>¿Imprimir comprobante de pago?</p>
         </div>
 
         <div className="print-modal-actions">

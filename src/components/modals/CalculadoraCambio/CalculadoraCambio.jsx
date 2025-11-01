@@ -6,7 +6,7 @@ const CalculadoraCambio = ({ isOpen, onClose, onConfirm, totalAmount }) => {
   const [cambio, setCambio] = useState(0);
   
   // Billetes predeterminados
-  const billetes = [5000, 10000, 20000, 50000, 100000];
+  const billetes = [3000, 4000, 5000, 10000, 20000, 50000];
 
   useEffect(() => {
     if (dineroEntregado && !isNaN(dineroEntregado)) {

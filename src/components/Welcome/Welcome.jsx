@@ -68,16 +68,16 @@ const Welcome = () => {
               } 
             });
           } else {
-            throw new Error('No se pudo obtener información del ticket/placa');
+            setErrorModal({
+              isOpen: true,
+              title: 'Error de Consulta',
+              message: error.message
+            });
           }
         } catch (error) {
           console.error('Error al consultar ticket:', error);
           // Mostrar error al usuario usando el modal
-          setErrorModal({
-            isOpen: true,
-            title: 'Error de Consulta',
-            message: error.message
-          });
+          navigate("/login");
         }
       });
     }

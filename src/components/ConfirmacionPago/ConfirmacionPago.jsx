@@ -60,6 +60,16 @@ const ConfirmacionPago = () => {
 
   // Función para manejar "Sí" en el modal de impresión
   const handlePrintYes = () => {
+    var isAndroid = false;
+    try{
+        isAndroid = Android.isWebAppClient();
+    }catch(e){}
+
+    if(isAndroid){
+      const invoce = sessionStorage.getItem("lastInvoice");
+      Android.print(invoce);
+    }
+
     // console.log('Usuario eligió imprimir factura');
     setShowPrintModal(false);
     setTimeout(() => {

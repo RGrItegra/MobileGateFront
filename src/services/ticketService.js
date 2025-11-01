@@ -1,8 +1,7 @@
 // Servicio para manejar las consultas de tickets y placas
 // Este archivo contiene funciones para consultar información de pagos
 
-import { getCurrentUser } from './authService';
-import { Navigate } from 'react-router-dom';
+import { getCurrentUser, isTokenExpired } from './authService';
 
 // URL base para las peticiones
 const API_URL = process.env.API_URL|| 'http://localhost:3000';
@@ -17,8 +16,13 @@ export const consultarTicket = async (inputType, inputValue) => {
   try {
     const currentUser = getCurrentUser();
     if (!currentUser) {
-      window.location.href = "/login";
+      
       throw new Error('Usuario no autenticado. Por favor, inicie sesión nuevamente.');
+    }
+
+    if(isTokenExpired(currentUser.token)){
+      sessionStorage.clear();
+      throw new Error('Token expiró');
     }
 
     const consultaData = {
@@ -74,8 +78,13 @@ export const consultarEstadoTicket = async (inputType, inputValue) => {
   try {
     const currentUser = getCurrentUser();
     if (!currentUser) {
-      window.location.href = "/login";
+      
       throw new Error('Usuario no autenticado. Por favor, inicie sesión nuevamente.');
+    }
+
+    if(isTokenExpired(currentUser.token)){
+      sessionStorage.clear();
+      throw new Error('Token expiró');
     }
 
     const consultaData = {
@@ -112,13 +121,13 @@ export const confirmarPago = async (ticket, type, amount, rate, status, currency
   try {
     const currentUser = getCurrentUser();
     if (!currentUser) {
-      window.location.href = "/login";
+      
       throw new Error('Usuario no autenticado. Por favor, inicie sesión nuevamente.');
     }
 
-    const storedAdmount = sessionStorage.getItem("ticketAmount:");
-    if(!storedAdmount){
-      throw new Error('No se encontró el monto del ticket en sessionStorage.');
+    if(isTokenExpired(currentUser.token)){
+      sessionStorage.clear();
+      throw new Error('Token expiró');
     }
 
     // 1. Pago en API externa
@@ -156,12 +165,18 @@ export const confirmarPago = async (ticket, type, amount, rate, status, currency
 export const confirmarPagoInterno = async(ticket,type) => {
   try {
     const currentUser = getCurrentUser();
-    if(!currentUser|| !currentUser.token){
-      window.location.href = "/login";
+    if(!currentUser){
+      
       throw new Error('Usuario no autenticado. Por favor, inicie sesión nuevamente.');
     }
-      const storedAdmount = sessionStorage.getItem("ticketAmount:");
-      if (!storedAdmount) {
+
+    if(isTokenExpired(currentUser.token)){
+      sessionStorage.clear();
+      throw new Error('Token expiró');
+    }
+    
+    const storedAdmount = sessionStorage.getItem("ticketAmount:");
+    if (!storedAdmount) {
       throw new Error('No se encontró el monto del ticket en sessionStorage.');
     }
     const confirmData = {

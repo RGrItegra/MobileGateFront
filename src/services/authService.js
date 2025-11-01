@@ -102,3 +102,19 @@ export const getAuthToken = () => {
   const u = getCurrentUser();
   return u?.token || null;
 };
+
+export const decodeToken = (token) => {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1])); 
+    return payload;
+  } catch (error) {
+    console.error("Error decoding token:", error);
+    return null;
+  }
+};
+
+export const isTokenExpired = (token) => {
+  const payload = decodeToken(token);
+  if (!payload || !payload.exp) return true;
+  return Date.now() >= payload.exp * 1000;
+};

@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import Header from '../Header/Header';
 import PrintComprobanteModal from '../modals/PrintComprobanteModal/PrintComprobanteModal';
 import '../../styles/ValorAPagar/ValorAPagar.css';
-import { consultarEstadoTicket, consultarTicket } from '../../services/ticketService';
+import { consultarEstadoTicket } from '../../services/ticketService';
 
 const ValorAPagar = () => {
   const location = useLocation();
@@ -85,6 +85,7 @@ const ValorAPagar = () => {
           }
         }catch(error) {
           console.error("Error al obtener el pago:", error)
+          navigate('/login');
         }
       };
       fetchPaymentData();
@@ -99,7 +100,7 @@ const ValorAPagar = () => {
       placa: paymentData.placa,
       estacionamiento: paymentData.totalAPagar,
       transaccionDigital: paymentData.procesamiento,
-      formaPago: 'NEQUI',
+      formaPago: 'Efectivo',
       fecha: new Date().toLocaleDateString('es-CO'),
       total: paymentData.totalAPagar + paymentData.procesamiento
     };
@@ -166,25 +167,29 @@ const ValorAPagar = () => {
             <span className="detail-value total-amount">$ {paymentData.totalAPagar}</span>
           </div>
 
-          {/* Nota de procesamiento */}
+          {/* Nota de procesamiento 
           <div className="processing-note">
             Incluye ${paymentData.procesamiento} por procesamiento de pago
           </div>
+          */}
         </div>
       </div>
 
       {/* Botón de continuar pago */}
-      <div className="continue-payment-section">
-        <button className="continue-payment-btn" onClick={handleContinuarPago}>
-          <div className="btn-icon">
-            <img src="/Recurso 25.png" className='PayIcon' alt="Pay Icon" />
+      {paymentData.costoParqueadero > 0 && (
+          <div className="continue-payment-section">
+            <button className="continue-payment-btn" onClick={handleContinuarPago}>
+              <div className="btn-icon">
+                <img src="/Recurso 25.png" className='PayIcon' alt="Pay Icon" />
+              </div>
+              <div className="btn-content">
+                <span className="btn-title">Continuar Pago</span>
+                <span className="btn-subtitle">Pago rápido y seguro</span>
+              </div>
+            </button>
           </div>
-          <div className="btn-content">
-            <span className="btn-title">Continuar Pago</span>
-            <span className="btn-subtitle">Pago rápido y seguro</span>
-          </div>
-        </button>
-      </div>
+      )}
+      
 
       {/* Modal de impresión de comprobante */}
       <PrintComprobanteModal

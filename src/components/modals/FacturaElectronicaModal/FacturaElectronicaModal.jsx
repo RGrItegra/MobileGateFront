@@ -16,6 +16,9 @@ const FacturaElectronicaModal = ({
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [usrId, setUsrId] = useState('');
+  const [btnDisabledNo,setBtnDisabledNo] = useState(false);
+  const [btnNameSi,setBtnNameSi] = useState('Si');
+  const [btnNameNo,setBtnNameNo] = useState('No');
 
   // Efecto para manejar el overflow del body cuando se abre el modal
   useEffect(() => {
@@ -52,14 +55,20 @@ const FacturaElectronicaModal = ({
   };
 
   const handleNoClick = async () => {
+    setBtnNameNo("Procesando...");
+    setBtnDisabledNo(true);
     try{
+      
       const current = JSON.parse(sessionStorage.getItem("currentPayment"));
       const rate = JSON.parse(sessionStorage.getItem("rate"));
       const status = JSON.parse(sessionStorage.getItem("status"));
 
-      await confirmarPago(ticket, type, current.amount, rate, status);
+      const response = await confirmarPago(ticket, type, current.amount, rate, status);
+      sessionStorage.setItem("lastInvoice",JSON.stringify(response.external.invoice));
       onContinue();
     } catch(error){
+      setBtnNameNo("No");
+      setBtnDisabledNo(false);
       console.error('Error al confirmar pago interno:', error);
     }
   };
@@ -73,6 +82,9 @@ const FacturaElectronicaModal = ({
     setName('');
     setEmail('');
     setUsrId('');
+    setBtnDisabledNo(false);
+    setBtnNameSi('Si');
+    setBtnNameNo('No');
     onClose();
   };
 
@@ -124,8 +136,16 @@ const FacturaElectronicaModal = ({
         )}
         {!showPersonaModal && (
           <div className="popup-button-group">
-            <button className="btn btn-outline" onClick={handleSiClick}>Sí</button>
-            <button className="btn btn-outline" onClick={handleNoClick}>No</button>
+            <button className="btn btn-outline"
+              disabled={true}
+              onClick={handleSiClick}>
+                {btnNameSi}
+              </button>
+            <button className="btn btn-outline"
+              disabled={btnDisabledNo}
+              onClick={handleNoClick}>
+                {btnNameNo}
+              </button>
           </div>
         )}
 

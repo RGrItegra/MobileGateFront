@@ -7,6 +7,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), ''); // Load all env variables
 
   return {
+    base: './',
     define: {
       'process.env': env, // Map process.env to the loaded environment variables
     },

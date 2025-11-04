@@ -41,7 +41,15 @@ const Header = () => {
           const errorData = await response.json();
           console.error("Error cerrando sesión en backend", errorData);
         } else {
-          // console.log("Sesión cerrada correctamente en backend");
+          const data = await response.json();
+          var isAndroid = false;
+          try{
+              isAndroid = Android.isWebAppClient();
+          }catch(e){}
+
+          if(isAndroid){
+            Android.print(JSON.stringify(data.summary));
+          }
         }
       }
 

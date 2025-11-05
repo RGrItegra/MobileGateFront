@@ -137,7 +137,7 @@ const FacturaElectronicaModal = ({
         {!showPersonaModal && (
           <div className="popup-button-group">
             <button className="btn btn-outline"
-              disabled={true}
+              disabled={false}
               onClick={handleSiClick}>
                 {btnNameSi}
               </button>

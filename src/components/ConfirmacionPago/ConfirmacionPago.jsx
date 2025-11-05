@@ -26,7 +26,7 @@ const ConfirmacionPago = () => {
     if(!confirmationData){
       navigate('/welcome');
     }
-  }, [confirmationData, navigate]);
+  }, [confirmationData]);
   
   const handleConfirmarPago = () => {
     setShowCalculadoraModal(true);
@@ -108,7 +108,7 @@ const ConfirmacionPago = () => {
       );*/
       
 
-      const current = {"amount":paymentData.amount,"ticket":confirmationData.ticket};
+      const current = {"amount":paymentData.amount,"ticket":confirmationData.ticket,"type":confirmationData.type};
       sessionStorage.setItem("currentPayment",JSON.stringify(current));
 
       //console.log('Datos devueltos por la API:', result);
@@ -146,7 +146,7 @@ const ConfirmacionPago = () => {
           onAccept={handlePrintYes}
           onCancel={handlePrintNo}
           ticket={confirmationData?.ticket}
-          type="LP"
+          type={confirmationData?.type}
         />
       </div>
     );
@@ -173,7 +173,7 @@ const ConfirmacionPago = () => {
         
         <div className="summary-row2">
           <span>Forma de Pago</span>
-          <span>EFECTIVO</span>
+          <span>Efectivo</span>
         </div>
         
         <div className="summary-row2">
@@ -189,7 +189,7 @@ const ConfirmacionPago = () => {
 
       <div className="button-wrapper">
         <button className="btn btn-primary" onClick={handleConfirmarPago}>
-          CONFIRMAR Y PAGAR
+          Confirmar y Pagar
         </button>
       </div>
 
@@ -200,8 +200,6 @@ const ConfirmacionPago = () => {
         isOpen={showFacturaModal}
         onClose={handleFacturaClose}
         onContinue={handleFacturaContinue}
-        ticket={confirmationData?.ticket} 
-  type="LP"
       />
 
       {/* Modal de impresión de factura */}

@@ -3,24 +3,25 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import Header from '../Header/Header';
 import PrintComprobanteModal from '../modals/PrintComprobanteModal/PrintComprobanteModal';
 import '../../styles/ValorAPagar/ValorAPagar.css';
-import { consultarEstadoTicket } from '../../services/ticketService';
+import { consultarTicket } from '../../services/ticketService';
 
 const ValorAPagar = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { inputType, inputValue, rateResponse } = location.state || {};
+  const { inputType, inputValue, statusResponse } = location.state || {};
 
   // console.info(rateResponse);
 
   // Estado para los datos de pago, mapeando solo los campos que necesitamos
   const [paymentData, setPaymentData] = useState({
-    placa: inputValue || '',
+    placa: '',
     nroTicket: '',
     horaIngreso: '',
     duracionEstadia: '',
     costoParqueadero: 0,
     totalAPagar: 0,
-    procesamiento: 0
+    procesamiento: 0,
+    inputType
   });
 
   // Estado para el modal de impresión
@@ -50,18 +51,21 @@ const ValorAPagar = () => {
 
    // Mapeo combinando ambas APIs
   const mapBackendData = (rateData, statusData) => {
-    const dateTimeStart = statusData?.inputDate ? new Date(statusData.inputDate) : null;
-    const dateTimeEnd = rateData?.dateTimeEnd ? new Date(rateData.dateTimeEnd) : null;
-    const rateEnd = rateData?.rateEnd ? new Date(rateData.rateEnd) : null;
+    const now = new Date();
 
+    const dateTimeStart = statusData?.inputDate ? new Date(statusData.inputDate) : null;
+
+    if(statusData?.nroTicket)
+    
     return {
-      placa: statusData?.plate || inputValue,
-      nroTicket: statusData?.nroTicket || inputValue,
+      placa: statusData?.plate || '',
+      nroTicket: statusData?.nroTicket || '',
       horaIngreso: formatHour24(dateTimeStart),
-      duracionEstadia: formatDuration(dateTimeStart, rateEnd || dateTimeEnd),
-      costoParqueadero: rateData?.price?.amount ?? 0,
+      duracionEstadia: formatDuration(dateTimeStart,now),
+      costoParqueadero: rateData?.turnover?.amount ?? 0,
       totalAPagar: rateData?.turnover?.amount ?? 0,
-      procesamiento: 0
+      procesamiento: 0,
+      inputType
     };
   };
 
@@ -75,13 +79,13 @@ const ValorAPagar = () => {
       const fetchPaymentData = async () => {
         try {
           //const ticketRateResponse = await consultarTicket(inputType, inputValue);
-          const statusResponse = await consultarEstadoTicket(inputType, inputValue);
+          const rateResponse = await consultarTicket(inputType, inputValue);
 
-          if(statusResponse.success) {
+          if(rateResponse.success) {
             
-            sessionStorage.setItem("status",JSON.stringify(statusResponse));
+            sessionStorage.setItem("rate",JSON.stringify(rateResponse.data));
 
-            setPaymentData(mapBackendData(rateResponse, statusResponse.data));
+            setPaymentData(mapBackendData(rateResponse.data, statusResponse));
           }
         }catch(error) {
           console.error("Error al obtener el pago:", error)
@@ -102,7 +106,8 @@ const ValorAPagar = () => {
       transaccionDigital: paymentData.procesamiento,
       formaPago: 'Efectivo',
       fecha: new Date().toLocaleDateString('es-CO'),
-      total: paymentData.totalAPagar + paymentData.procesamiento
+      total: paymentData.totalAPagar + paymentData.procesamiento,
+      type: inputType
     };
 
     navigate('/confirmacion-pago', {
@@ -145,7 +150,7 @@ const ValorAPagar = () => {
       <div className="payment-info-card">
         {/* Badge de placa */}
         <div className="placa-badge">
-          <span className="placa-number">{formatPlaca(paymentData.placa)}</span>
+          <span className="placa-number">{paymentData.nroTicket}</span>
         </div>
 
         {/* Detalles del pago */}

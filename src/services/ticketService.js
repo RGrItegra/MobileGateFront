@@ -27,7 +27,7 @@ export const consultarTicket = async (inputType, inputValue) => {
 
     const consultaData = {
       ticket: inputValue,
-      type: inputType === 'placa' ? 'LP' : 'ticket',
+      type: inputType
     };
 
     const response = await fetch(`${API_URL}/ticket/rate`, {
@@ -89,7 +89,7 @@ export const consultarEstadoTicket = async (inputType, inputValue) => {
 
     const consultaData = {
       ticket: inputValue,
-      type: inputType === 'placa' ? 'LP' : 'ticket',
+      type: inputType
     };
 
     const response = await fetch(`${API_URL}/ticket/status/short`, {

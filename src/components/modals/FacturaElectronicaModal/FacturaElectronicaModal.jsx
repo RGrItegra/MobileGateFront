@@ -5,9 +5,7 @@ import '../../../styles/modals/FacturaElectronicaModal/FacturaElectronicaModal.c
 const FacturaElectronicaModal = ({ 
   isOpen, 
   onClose, 
-  onContinue ,
-  ticket,
-  type="LP"
+  onContinue
 }) => {
   const [showPersonaModal, setShowPersonaModal] = useState(false);
   const [showResultModal, setShowResultModal] = useState(false);
@@ -63,7 +61,7 @@ const FacturaElectronicaModal = ({
       const rate = JSON.parse(sessionStorage.getItem("rate"));
       const status = JSON.parse(sessionStorage.getItem("status"));
 
-      const response = await confirmarPago(ticket, type, current.amount, rate, status);
+      const response = await confirmarPago(current.ticket, current.type, current.amount, rate, status);
       sessionStorage.setItem("lastInvoice",JSON.stringify(response.external.invoice));
       onContinue();
     } catch(error){

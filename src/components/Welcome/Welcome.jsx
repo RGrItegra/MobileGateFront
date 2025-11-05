@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLoading } from '../../contexts/LoadingContext';
-import { consultarTicket} from '../../services/ticketService';
+import { consultarEstadoTicket } from '../../services/ticketService';
 import Header from '../Header/Header';
 import ErrorModal from '../modals/ErrorModal/ErrorModal';
 import '../../styles/Welcome/Welcome.css';
@@ -9,20 +9,20 @@ import '../../styles/Welcome/Welcome.css';
 const Welcome = () => {
   const navigate = useNavigate();
   const { withLoading } = useLoading();
-  const [inputType, setInputType] = useState('placa'); // 'placa' o 'codigo'
+  const [inputType, setInputType] = useState('LP'); // 'LP' o 'PARK'
   const [inputValue, setInputValue] = useState('');
   const [isValid, setIsValid] = useState(false);
   const [showFacturaModal, setShowFacturaModal] = useState(false);
   const [errorModal, setErrorModal] = useState({ isOpen: false, title: '', message: '' });
 
   const validateInput = (value, type) => {
-    if (type === 'placa') {
+    if (type === 'LP') {
       // Placa: 6 dígitos alfanuméricos (letras y números)
       const placaRegex = /^[A-Za-z0-9]{6}$/;
       return placaRegex.test(value);
     } else {
       // Código: 23 dígitos numéricos
-      const codigoRegex = /^[0-9]{23}$/;
+      const codigoRegex = /^[0-9]{6}|[0-9]{23}$/;
       return codigoRegex.test(value);
     }
   };
@@ -31,7 +31,7 @@ const Welcome = () => {
     let value = e.target.value;
     
     // Filtrar caracteres según el tipo de input
-    if (inputType === 'placa') {
+    if (inputType === 'LP') {
       // Solo permitir letras y números, convertir a mayúsculas
       value = value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
     } else {
@@ -54,17 +54,20 @@ const Welcome = () => {
       await withLoading(async () => {
         try {
           // Realizar consulta al backend
-          const response = await consultarTicket(inputType, inputValue);
+          const response = await consultarEstadoTicket(inputType, inputValue);
           // console.info(response);
           
           if (response.success) {
-            sessionStorage.setItem("rate",JSON.stringify(response.data));
+            const data = response.data;
+            const realTicket = data.nroTicket?data.nroTicket:inputValue;
+
+            sessionStorage.setItem("status",JSON.stringify(data));
             // Navegar a la página de valor a pagar con los datos obtenidos
             navigate('/valor-a-pagar', { 
               state: { 
                 inputType, 
-                inputValue, 
-                rateResponse: response.data
+                inputValue:realTicket.length===23?realTicket:inputValue, 
+                statusResponse: data
               } 
             });
           } else {
@@ -116,21 +119,21 @@ const Welcome = () => {
 
       <div className="text-p-container">
         <p>
-          Inicie el Proceso de pago <br /> ingresando su {inputType}
+          Inicie el Proceso de pago <br /> ingresando número de {inputType==='LP'?'placa':'ticket'}
         </p>
       </div>
 
       {/* Selector de tipo de entrada */}
       <div className="input-type-selector">
         <button 
-          className={`type-btn ${inputType === 'placa' ? 'active' : ''}`}
-          onClick={() => handleTypeChange('placa')}
+          className={`type-btn ${inputType === 'LP' ? 'active' : ''}`}
+          onClick={() => handleTypeChange('LP')}
         >
           Placa
         </button>
         <button 
-          className={`type-btn ${inputType === 'codigo' ? 'active' : ''}`}
-          onClick={() => handleTypeChange('codigo')}
+          className={`type-btn ${inputType === 'PARK' ? 'active' : ''}`}
+          onClick={() => handleTypeChange('PARK')}
         >
           Ticket
         </button>
@@ -139,8 +142,8 @@ const Welcome = () => {
       <div className="search-container">
         <input 
           type="text" 
-          placeholder={inputType === 'placa' ? 'Ingrese su placa (ej: ABC123)' : 'Ingrese su código de 23 dígitos'}
-          maxLength={inputType === 'codigo' ? 23 : 6}
+          placeholder={inputType === 'LP' ? 'Ingrese su placa' : 'Ingrese el número de ticket'}
+          maxLength={inputType === 'PARK' ? 23 : 6}
           className="search-input"
           value={inputValue} 
           onChange={handleInputChange} 

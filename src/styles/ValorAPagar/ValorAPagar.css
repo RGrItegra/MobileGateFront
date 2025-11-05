@@ -51,6 +51,10 @@
   gap: 10px;
   margin-bottom: 20px;
   box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+  max-width: 100%;
+  flex-wrap: wrap; /* permite que el contenido se ajuste */
+  overflow-x: auto; /* solo aparece scroll si es necesario */
+  -webkit-overflow-scrolling: touch;
 }
 
 .car-icon {
@@ -64,13 +68,18 @@
 }
 
 .placa-number {
-  font-size: 20px;
+  font-size: clamp(1rem, 5vw, 1.25rem); /* tamaño responsive */
   font-weight: bold;
   color: #333;
   text-align: center;
   display: block;
   width: 100%;
-  letter-spacing: 2px;
+  max-width: 100%;
+  letter-spacing: 0.1em;
+  line-height: 1.2;
+  padding: 4px 6px; /* espacio interno para legibilidad */
+  overflow-wrap: anywhere; /* permite corte en cualquier punto */
+  word-break: break-word; /* respaldo para navegadores */
 }
 
 /* Detalles del pago */
@@ -204,6 +213,10 @@
   .payment-info-card {
     max-width: 450px;
     padding: 35px;
+  }
+
+  .placa-number {
+    font-size: clamp(1rem, 2.2vw, 1.4rem);
   }
   
   .continue-payment-section {

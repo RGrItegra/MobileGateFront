@@ -117,7 +117,7 @@ export const consultarEstadoTicket = async (inputType, inputValue) => {
 };
 
 // Función para confirmar el pago de un ticket
-export const confirmarPago = async (ticket, type, amount, rate, status, currencyCode = 'COP') => {
+export const confirmarPago = async (ticket, type, amount, rate, status, currencyCode = 'COP',userId=null) => {
   try {
     const currentUser = getCurrentUser();
     if (!currentUser) {
@@ -136,7 +136,8 @@ export const confirmarPago = async (ticket, type, amount, rate, status, currency
       type,
       payment: { amount, currencyCode },
       rate: rate,
-      status: status
+      status: status,
+      userId,
     }
     const response = await fetch(`${API_URL}/ticket/payment`, {
       method: 'POST',

@@ -1,22 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { confirmarPago } from '../../../services/ticketService';
+import { buscarCliente } from '../../../services/clientService';
 import '../../../styles/modals/FacturaElectronicaModal/FacturaElectronicaModal.css';
 
-const FacturaElectronicaModal = ({ 
-  isOpen, 
-  onClose, 
+const FacturaElectronicaModal = ({
+  isOpen,
+  onClose,
   onContinue
 }) => {
   const [showPersonaModal, setShowPersonaModal] = useState(false);
   const [showResultModal, setShowResultModal] = useState(false);
   const [tipoDcto, setTipoDcto] = useState('');
   const [nroDcto, setNroDcto] = useState('');
+
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [usrId, setUsrId] = useState('');
-  const [btnDisabledNo,setBtnDisabledNo] = useState(false);
-  const [btnNameSi,setBtnNameSi] = useState('Si');
-  const [btnNameNo,setBtnNameNo] = useState('No');
+  const [userId, setUserId] = useState(null);
+
+  const [btnDisabledNo, setBtnDisabledNo] = useState(false);
+  const [btnNameSi, setBtnNameSi] = useState('Si');
+  const [btnNameNo, setBtnNameNo] = useState('No');
 
   // Efecto para manejar el overflow del body cuando se abre el modal
   useEffect(() => {
@@ -35,13 +38,8 @@ const FacturaElectronicaModal = ({
   // Función para buscar cliente por documento
   const fetchClientByDoc = async (tipoDcto, nroDcto) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/client/${tipoDcto}/${nroDcto}`);
-      if (response.ok) {
-        const data = await response.json();
-        return data;
-      } else {
-        throw new Error('Cliente no encontrado');
-      }
+      const data = await buscarCliente(tipoDcto, nroDcto);
+      return data;
     } catch (error) {
       console.error('Error al buscar cliente:', error);
       return null;
@@ -55,16 +53,32 @@ const FacturaElectronicaModal = ({
   const handleNoClick = async () => {
     setBtnNameNo("Procesando...");
     setBtnDisabledNo(true);
-    try{
-      
+    try {
+
       const current = JSON.parse(sessionStorage.getItem("currentPayment"));
       const rate = JSON.parse(sessionStorage.getItem("rate"));
-      const status = JSON.parse(sessionStorage.getItem("status"));
+      const status = JSON.parse(sessionStorage.getItem("status")) || {
+        inDeviceId: null,
+        inputDate: null,
+        plate: null,
+        nroTicket: null,
+        inDeviceName: null,
+        entryAreaId: null,
+        entryAreaName: null
+      };
 
-      const response = await confirmarPago(current.ticket, current.type, current.amount, rate, status);
-      sessionStorage.setItem("lastInvoice",JSON.stringify(response.external.invoice));
+      const response = await confirmarPago(
+        current.ticket,
+        current.type,
+        current.amount,
+        rate,
+        status,
+        "COP",
+        userId
+      );
+      sessionStorage.setItem("lastInvoice", JSON.stringify(response.external.invoice));
       onContinue();
-    } catch(error){
+    } catch (error) {
       setBtnNameNo("No");
       setBtnDisabledNo(false);
       console.error('Error al confirmar pago interno:', error);
@@ -99,17 +113,44 @@ const FacturaElectronicaModal = ({
 
     const clientData = await fetchClientByDoc(tipoDcto, nroDcto);
     if (clientData) {
-      setName(clientData.name || '');
+      const displayName = clientData.razonSocial || clientData.nombre || clientData.toShow || 'Sin nombre';
+      setName(displayName);
       setEmail(clientData.email || '');
-      setUsrId(clientData.id || '');
+      setUserId(clientData.id || null);
       setShowResultModal(true);
     } else {
       alert('Cliente no encontrado');
     }
   };
 
-  const handleClick = () => {
-    onContinue();
+  const handleClick = async () => {
+    try {
+      const current = JSON.parse(sessionStorage.getItem("currentPayment"));
+      const rate = JSON.parse(sessionStorage.getItem("rate"));
+      const status = JSON.parse(sessionStorage.getItem("status")) || {
+        inDeviceId: null,
+        inputDate: null,
+        plate: null,
+        nroTicket: null,
+        inDeviceName: null,
+        entryAreaId: null,
+        entryAreaName: null
+      };
+
+      const response = await confirmarPago(
+        current.ticket,
+        current.type,
+        current.amount,
+        rate,
+        status,
+        "COP",
+        userId
+      );
+      sessionStorage.setItem("lastInvoice", JSON.stringify(response.external.invoice));
+      onContinue();
+    } catch (error) {
+      console.error('Error al confirmar pago con datos del cliente:', error);
+    }
   };
 
   const handleClickBack = () => {
@@ -137,13 +178,13 @@ const FacturaElectronicaModal = ({
             <button className="btn btn-outline"
               disabled={false}
               onClick={handleSiClick}>
-                {btnNameSi}
-              </button>
+              {btnNameSi}
+            </button>
             <button className="btn btn-outline"
               disabled={btnDisabledNo}
               onClick={handleNoClick}>
-                {btnNameNo}
-              </button>
+              {btnNameNo}
+            </button>
           </div>
         )}
 
@@ -152,14 +193,14 @@ const FacturaElectronicaModal = ({
             <div className='select-content'>
               <label htmlFor="tipo-dcto">Tipo Documento</label>
               <select id="tipo-dcto"
-                  onChange={(e)=>{setTipoDcto(e.target.value)}}
-                  value={tipoDcto}>
+                onChange={(e) => { setTipoDcto(e.target.value) }}
+                value={tipoDcto}>
                 <option value="">Seleccione un tipo de documento</option>
-                <option value="13">CÉDULA DE CIUDADANÍA</option>
-                <option value="22">CÉDULA EXTRANJERÍA</option>
-                <option value="47">PERMISO PROTECCIÓN TEMPORAL</option>
-                <option value="41">PASAPORTE</option>
-                <option value="31">NIT</option>
+                <option value="CÉDULA DE CIUDADANÍA">CÉDULA DE CIUDADANÍA</option>
+                <option value="CÉDULA EXTRANJERÍA">CÉDULA EXTRANJERÍA</option>
+                <option value="PERMISO PROTECCIÓN TEMPORAL">PERMISO PROTECCIÓN TEMPORAL</option>
+                <option value="PASAPORTE">PASAPORTE</option>
+                <option value="NIT">NIT</option>
               </select>
             </div>
             <div className='nrodoc-content'>
@@ -169,7 +210,7 @@ const FacturaElectronicaModal = ({
                 value={nroDcto}
                 id='nro-dcto'
                 maxLength={15}
-                onChange={handleDctoChange}/>
+                onChange={handleDctoChange} />
             </div>
           </div>
         )}
@@ -182,7 +223,7 @@ const FacturaElectronicaModal = ({
                 type='text'
                 value={name}
                 id='rsocial'
-                disabled/>
+                disabled />
             </div>
             <div className='nrodoc-content'>
               <label htmlFor='uemail'>Email</label>
@@ -190,26 +231,26 @@ const FacturaElectronicaModal = ({
                 type='text'
                 value={email}
                 id='uemail'
-                disabled/>
+                disabled />
             </div>
           </div>
         )}
 
         {showPersonaModal && !showResultModal && (
           <div className="popup-button-group">
-              <button className="btn btn-outline" onClick={handleNoClick}>Continuar sin sus datos</button>
-              <button className="btn btn-primary" onClick={handleSearchClick}>Buscar</button>
-            </div>
+            <button className="btn btn-outline" onClick={handleNoClick}>Continuar sin sus datos</button>
+            <button className="btn btn-primary" onClick={handleSearchClick}>Buscar</button>
+          </div>
         )}
 
         {showResultModal && (
           <div className="popup-button-group">
-              <button className="btn btn-outline" onClick={handleClickBack}>Regresar</button>
-              <button className="btn btn-primary" onClick={handleClick}>Continuar</button>
-            </div>
+            <button className="btn btn-outline" onClick={handleClickBack}>Regresar</button>
+            <button className="btn btn-primary" onClick={handleClick}>Continuar</button>
+          </div>
         )}
 
-        
+
       </div>
     </div>
   );

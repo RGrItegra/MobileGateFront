@@ -150,7 +150,7 @@ const ValorAPagar = () => {
       <div className="payment-info-card">
         {/* Badge de placa */}
         <div className="placa-badge">
-          <span className="placa-number">{paymentData.nroTicket}</span>
+          <span className="placa-number" title={paymentData.nroTicket}>{paymentData.nroTicket}</span>
         </div>
 
         {/* Detalles del pago */}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '../Header/Header';
 import '../../styles/Welcome/Welcome.css';
 import '../../styles/CorrecionPlaca/PlateCorrection.css'
@@ -7,16 +7,31 @@ const PlateCorrection = () => {
     const [placa, setPlaca] = useState('');
     const [isValid, setIsValid] = useState(false);
     const [selectedSalida, setSelectedSalida] = useState(null);
+    const [salidas, setSalidas] = useState([]);
+    const [loading, setLoading] = useState(false);
 
-    // Mock temporal (solo visual)
-    const salidasMock = [
-        { id: 1, nombre: "Salida 43" },
-        { id: 2, nombre: "Salida 45" },
-        { id: 3, nombre: "Salida 47" },
-        { id: 4, nombre: "Salida 32" },
-        { id: 5, nombre: "Salida 55" },
-        { id: 6, nombre: "Salida 57" },
-    ];
+    // Cargar salidas al montar el componente
+    useEffect(() => {
+        fetchSalidas();
+    }, []);
+
+    const fetchSalidas = async () => {
+        try {
+            setLoading(true);
+            const response = await fetch('http://localhost:3000/antenna/salidas');
+            const result = await response.json();
+            
+            if (response.ok && result.data) {
+                // Si la API devuelve un solo objeto, conviértelo en array
+                const salidasArray = Array.isArray(result.data) ? result.data : [result.data];
+                setSalidas(salidasArray);
+            }
+        } catch (err) {
+            console.error('Error fetching salidas:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const validatePlaca = (value) => {
         const regex = /^[A-Za-z0-9]{6}$/;
@@ -27,6 +42,38 @@ const PlateCorrection = () => {
         let value = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
         setPlaca(value);
         setIsValid(validatePlaca(value));
+    };
+
+    const handleProcesar = async () => {
+        if (!isValid || !selectedSalida) return;
+
+        try {
+            setLoading(true);
+
+            const response = await fetch('http://localhost:3000/correct/plate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    gerId: selectedSalida,
+                    cor_plate: placa
+                })
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                // Limpiar formulario después del éxito
+                setPlaca('');
+                setIsValid(false);
+                setSelectedSalida(null);
+            }
+        } catch (err) {
+            console.error('Error processing correction:', err);
+        } finally {
+            setLoading(false);
+        }
     };
 
   
@@ -62,14 +109,14 @@ const PlateCorrection = () => {
                 <p className="salidas-title">Seleccione la salida</p>
 
                 <div className="salidas-grid">
-                    {salidasMock.map((salida) => (
-                        <label key={salida.id} className="salida-option">
+                    {salidas.map((salida) => (
+                        <label key={salida.gerNr} className="salida-option">
                             <input
                                 type="checkbox"
-                                checked={selectedSalida === salida.id}
-                                onChange={() => setSelectedSalida(salida.id)}
+                                checked={selectedSalida === salida.gerNr}
+                                onChange={() => setSelectedSalida(salida.gerNr)}
                             />
-                            {salida.nombre}
+                            {salida.antName}
                         </label>
                     ))}
                 </div>
@@ -79,9 +126,10 @@ const PlateCorrection = () => {
             <div className="search-container">
                 <button
                     className="plate-continue-button"
-                    disabled={!isValid || !selectedSalida}
+                    disabled={!isValid || !selectedSalida || loading}
+                    onClick={handleProcesar}
                 >
-                    PROCESAR
+                    {loading ? 'PROCESANDO...' : 'PROCESAR'}
                 </button>
             </div>
         </div>

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { HiMenu } from 'react-icons/hi';
-import { AiOutlineHome, AiOutlineSetting, AiOutlineLogout } from 'react-icons/ai';
+import { AiOutlineHome, AiOutlineSetting, AiOutlineLogout ,AiOutlineIdcard } from 'react-icons/ai';
 import '../../styles/Header/Header.css';
 
 const Header = () => {
@@ -65,6 +65,11 @@ const Header = () => {
 
   const handleSettings = () => setIsMenuOpen(false);
 
+  const handlePlataCorrection = ()=>{
+    navigate('/plate-correction');
+    setIsMenuOpen(false)
+  }
+
   return (
     <>
       <header className={`header ${isMenuOpen ? 'menu-open' : ''}`}>
@@ -90,6 +95,9 @@ const Header = () => {
           </button>
           <button className="menu-item" onClick={handleSettings}>
             <AiOutlineSetting size={20} /><span>Settings</span>
+          </button>
+            <button className="menu-item" onClick={handlePlataCorrection}>
+            <AiOutlineIdcard size={20} /><span>Plate correction</span>
           </button>
           <button className="menu-item" onClick={handleLogout}>
             <AiOutlineLogout size={20} /><span>Logout</span>

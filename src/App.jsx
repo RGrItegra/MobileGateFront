@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Login from './components/Login/Login'
 import Welcome from './components/Welcome/Welcome'
 import Loading from './components/Loading/Loading'
+import PlateCorrection from './components/CorrecionPlaca/PlateCorrection'
 
 // Importación del contexto de loading
 import { LoadingProvider, useLoading } from './contexts/LoadingContext'
@@ -40,6 +41,7 @@ function AppContent() {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/welcome" element={<Welcome />} />
+            <Route path="/plate-correction" element={<PlateCorrection />} />
             {/* Las siguientes rutas se implementarán en futuras iteraciones */}
             {/* <Route path="/consulta" element={<Consulta />} /> */}
             <Route path="/valor-a-pagar" element={<ValorAPagar />} />

@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Header from '../Header/Header';
+import CoincidenciasModal from '../modals/CoincidenciaModal/CoincidenciaModal';
+import coincidenciasMock from '../test/test.json'
+
+import '../../styles/modals/CoincidenciaModal/CoincidenciaModal.css'
 import '../../styles/Welcome/Welcome.css';
 import '../../styles/CorrecionPlaca/PlateCorrection.css'
 
@@ -10,17 +14,32 @@ const PlateCorrection = () => {
     const [salidas, setSalidas] = useState([]);
     const [loading, setLoading] = useState(false);
 
+    const [coincidencias, setCoincidencias] = useState([]);
+    const [showModal, setShowModal] = useState(false);
+    const [mensajeExito, setMensajeExito] = useState("");
+
+    useEffect(() => {
+        if (mensajeExito) {
+            const timer = setTimeout(() => {
+                setMensajeExito("");
+            }, 1400);
+
+            return () => clearTimeout(timer);
+        }
+    }, [mensajeExito]);
+
     // Cargar salidas al montar el componente
     useEffect(() => {
         fetchSalidas();
     }, []);
+
 
     const fetchSalidas = async () => {
         try {
             setLoading(true);
             const response = await fetch('http://localhost:3000/antenna/salidas');
             const result = await response.json();
-            
+
             if (response.ok && result.data) {
                 // Si la API devuelve un solo objeto, conviértelo en array
                 const salidasArray = Array.isArray(result.data) ? result.data : [result.data];
@@ -41,7 +60,59 @@ const PlateCorrection = () => {
     const handlePlacaChange = (e) => {
         let value = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
         setPlaca(value);
-        setIsValid(validatePlaca(value));
+
+        const valida = validatePlaca(value);
+        setIsValid(valida);
+
+        if (valida) {
+            consultarCoincidencia(value);
+        }
+    };
+
+
+    // const consultarCoincidencia = async (placaIngresada) => {
+    //     try {
+    //         const response = await fetch(
+    //             `http://localhost:3000/coincidences/${placaIngresada}`
+    //         );
+
+    //         const result = await response.json();
+
+    //         if (response.ok && Array.isArray(result) && result.length > 0) {
+    //             setCoincidencias(result);
+    //             setShowModal(true);
+    //         } else {
+    //             setCoincidencias([]);
+    //             setShowModal(false);
+    //         }
+
+    //     } catch (err) {
+    //         console.error("Error al consultar coincidencias:", err);
+                //setCoincidencias([]);
+                //setShowModal(false);
+    //     }
+    // };
+
+    const consultarCoincidencia = () => {
+
+        // Acceso correcto a tu estructura JSON
+        const mock = Array.isArray(coincidenciasMock) ? coincidenciasMock : [];
+
+        const coincidenciasFiltradas = mock.filter(item => item.distance <= 1);
+
+        if (coincidenciasFiltradas.length  > 0) {
+            setCoincidencias(coincidenciasFiltradas);
+            setShowModal(true);
+        } else {
+            setCoincidencias([]);
+            setShowModal(false);
+        }
+    };
+
+
+    const handleSelectCoincidencia = (plate) => {
+        setPlaca(plate);
+        setShowModal(false);
     };
 
     const handleProcesar = async () => {
@@ -52,9 +123,7 @@ const PlateCorrection = () => {
 
             const response = await fetch('http://localhost:3000/correct/plate', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     gerId: selectedSalida,
                     cor_plate: placa
@@ -64,11 +133,12 @@ const PlateCorrection = () => {
             const result = await response.json();
 
             if (response.ok) {
-                // Limpiar formulario después del éxito
                 setPlaca('');
                 setIsValid(false);
                 setSelectedSalida(null);
+                setMensajeExito("✔ Corrección realizada exitosamente");
             }
+
         } catch (err) {
             console.error('Error processing correction:', err);
         } finally {
@@ -76,7 +146,6 @@ const PlateCorrection = () => {
         }
     };
 
-  
     return (
         <div className="home-container">
             <Header />
@@ -91,6 +160,11 @@ const PlateCorrection = () => {
                     ingresando número de placa
                 </p>
             </div>
+            {mensajeExito && (
+                <div className="mensaje-exito">
+                    {mensajeExito}
+                </div>
+            )}
 
             {/* Input placa */}
             <div className="search-container">
@@ -104,7 +178,7 @@ const PlateCorrection = () => {
                 />
             </div>
 
-            {/* Selección de salida en el centro */}
+            {/* Selección de salida */}
             <div className="salidas-container">
                 <p className="salidas-title">Seleccione la salida</p>
 
@@ -122,7 +196,7 @@ const PlateCorrection = () => {
                 </div>
             </div>
 
-            {/* Botón (mismo ancho que el input) */}
+            {/* Botón */}
             <div className="search-container">
                 <button
                     className="plate-continue-button"
@@ -132,6 +206,15 @@ const PlateCorrection = () => {
                     {loading ? 'PROCESANDO...' : 'PROCESAR'}
                 </button>
             </div>
+
+            {/* Modal coincidencias */}
+            {showModal && (
+                <CoincidenciasModal
+                    coincidencias={coincidencias}
+                    onSelect={handleSelectCoincidencia}
+                    onClose={() => setShowModal(false)}
+                />
+            )}
         </div>
     );
 };

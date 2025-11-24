@@ -63,7 +63,7 @@ const Header = () => {
     }
   };
 
-  const handleSettings = () => setIsMenuOpen(false);
+  // const handleSettings = () => setIsMenuOpen(false);
 
   const handlePlataCorrection = ()=>{
     navigate('/plate-correction');
@@ -93,9 +93,9 @@ const Header = () => {
           <button className="menu-item" onClick={handleHome}>
             <AiOutlineHome size={20} /><span>Home</span>
           </button>
-          <button className="menu-item" onClick={handleSettings}>
+          {/* <button className="menu-item" onClick={handleSettings}>
             <AiOutlineSetting size={20} /><span>Settings</span>
-          </button>
+          </button> */}
             <button className="menu-item" onClick={handlePlataCorrection}>
             <AiOutlineIdcard size={20} /><span>Plate correction</span>
           </button>

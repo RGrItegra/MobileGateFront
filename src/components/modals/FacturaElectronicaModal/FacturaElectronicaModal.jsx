@@ -38,8 +38,14 @@ const FacturaElectronicaModal = ({
   // Función para buscar cliente por documento
   const fetchClientByDoc = async (tipoDcto, nroDcto) => {
     try {
-      const data = await buscarCliente(tipoDcto, nroDcto);
-      return data;
+      const result = await buscarCliente(tipoDcto, nroDcto);
+
+      if (result.status === 401 || result.status === 403) {
+        sessionStorage.clear();
+        navigate("/login");
+        return null;
+      }
+      return result.data;
     } catch (error) {
       console.error('Error al buscar cliente:', error);
       return null;

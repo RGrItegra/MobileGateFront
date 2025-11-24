@@ -17,13 +17,19 @@ export async function buscarCliente(tipoDcto, nroDcto) {
         if (!tipoMapped || !numDcto) throw new Error("Tipo y número de documento son requeridos");
 
         const response = await fetch(
-            `${API_URL}/client/find?tipoDcto=${tipoMapped}&nroDcto=${numDcto}`
+            `${API_URL}/client/find?tipoDcto=${tipoMapped}&nroDcto=${numDcto}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem("token")}`
+                }
+            }
         );
 
-        if (!response.ok) throw new Error("Error al buscar el cliente");
-
         const data = await response.json();
-        return data;
+        return {
+            status: response.status,
+            data: data
+        };
     } catch (error) {
         console.error("Error en buscarCliente:", error.message);
         throw error;

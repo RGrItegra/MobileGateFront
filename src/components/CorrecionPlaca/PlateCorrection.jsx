@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Header from '../Header/Header';
 import CoincidenciasModal from '../modals/CoincidenciaModal/CoincidenciaModal';
-import coincidenciasMock from '../test/test.json'
+//import coincidenciasMock from '../test/test.json'
 
 import '../../styles/modals/CoincidenciaModal/CoincidenciaModal.css'
 import '../../styles/Welcome/Welcome.css';
@@ -18,6 +18,9 @@ const PlateCorrection = () => {
     const [showModal, setShowModal] = useState(false);
     const [mensajeExito, setMensajeExito] = useState("");
 
+    const apiPath = process.env.API_URL || 'http://localhost:3000';
+    const apiPlatePath = process.env.API_PLATE_URL || 'http://localhost:3000';
+
     useEffect(() => {
         if (mensajeExito) {
             const timer = setTimeout(() => {
@@ -28,16 +31,21 @@ const PlateCorrection = () => {
         }
     }, [mensajeExito]);
 
+    const hasFetched = useRef(false);
+
     // Cargar salidas al montar el componente
     useEffect(() => {
-        fetchSalidas();
+        if (!hasFetched.current) {
+            hasFetched.current = true;
+            fetchSalidas();
+        }
     }, []);
 
 
     const fetchSalidas = async () => {
         try {
             setLoading(true);
-            const response = await fetch('http://localhost:3000/antenna/salidas');
+            const response = await fetch(`${apiPath}/antenna/salidas`);
             const result = await response.json();
 
             if (response.ok && result.data) {
@@ -70,30 +78,35 @@ const PlateCorrection = () => {
     };
 
 
-    // const consultarCoincidencia = async (placaIngresada) => {
-    //     try {
-    //         const response = await fetch(
-    //             `http://localhost:3000/coincidences/${placaIngresada}`
-    //         );
+    const consultarCoincidencia = async (placaIngresada) => {
+        setLoading(true);
+         try {
+             const response = await fetch(
+                 `${apiPlatePath}/api/plates/coincidence/${placaIngresada}`
+             );
 
-    //         const result = await response.json();
+             let result = await response.json();
 
-    //         if (response.ok && Array.isArray(result) && result.length > 0) {
-    //             setCoincidencias(result);
-    //             setShowModal(true);
-    //         } else {
-    //             setCoincidencias([]);
-    //             setShowModal(false);
-    //         }
+             if (response.ok && Array.isArray(result) && result.length > 0) {
+                if(result.length>3)
+                    result = result.slice(0, 3); 
+                 setCoincidencias(result);
+                 setShowModal(true);
+             } else {
+                 setCoincidencias([]);
+                 setShowModal(false);
+             }
 
-    //     } catch (err) {
-    //         console.error("Error al consultar coincidencias:", err);
-                //setCoincidencias([]);
-                //setShowModal(false);
-    //     }
-    // };
+         } catch (err) {
+            console.error("Error al consultar coincidencias:", err);
+            setCoincidencias([]);
+            setShowModal(false);
+         }finally{
+            setLoading(false);
+         }
+    };
 
-    const consultarCoincidencia = () => {
+    /*const consultarCoincidencia = () => {
 
         // Acceso correcto a tu estructura JSON
         const mock = Array.isArray(coincidenciasMock) ? coincidenciasMock : [];
@@ -107,7 +120,7 @@ const PlateCorrection = () => {
             setCoincidencias([]);
             setShowModal(false);
         }
-    };
+    };*/
 
 
     const handleSelectCoincidencia = (plate) => {
@@ -121,7 +134,7 @@ const PlateCorrection = () => {
         try {
             setLoading(true);
 
-            const response = await fetch('http://localhost:3000/correct/plate', {
+            const response = await fetch(`${apiPath}/correct/plate`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -150,6 +163,7 @@ const PlateCorrection = () => {
         <div className="home-container">
             <Header />
 
+            {/*
             <div className="img-container">
                 <img src="/Recurso 1.png" alt="Imagen Portada" />
             </div>
@@ -160,6 +174,8 @@ const PlateCorrection = () => {
                     ingresando número de placa
                 </p>
             </div>
+            */}
+
             {mensajeExito && (
                 <div className="mensaje-exito">
                     {mensajeExito}

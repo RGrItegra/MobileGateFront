@@ -107,7 +107,7 @@ const ConfirmacionPago = () => {
         'COP'
       );*/
       
-
+      
       const current = {"amount":paymentData.amount,"ticket":confirmationData.ticket,"type":confirmationData.type};
       sessionStorage.setItem("currentPayment",JSON.stringify(current));
 

@@ -45,16 +45,28 @@ const PlateCorrection = () => {
     const fetchSalidas = async () => {
         try {
             setLoading(true);
-            const response = await fetch(`${apiPath}/antenna/salidas`);
+            const response = await fetch(`${apiPath}/antenna/salidas`, {
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem("token")}`
+                }
+            });
             const result = await response.json();
+
+            if (response.status === 401 || response.status === 403) {
+                sessionStorage.clear();
+                navigate("/login");
+                return
+            }
 
             if (response.ok && result.data) {
                 // Si la API devuelve un solo objeto, conviértelo en array
                 const salidasArray = Array.isArray(result.data) ? result.data : [result.data];
                 setSalidas(salidasArray);
             }
-        } catch (err) {
-            console.error('Error fetching salidas:', err);
+        } catch (error) {
+            console.error('Error fetching salidas:', error);
+            sessionStorage.clear();
+            navigate("/login");
         } finally {
             setLoading(false);
         }
@@ -80,30 +92,41 @@ const PlateCorrection = () => {
 
     const consultarCoincidencia = async (placaIngresada) => {
         setLoading(true);
-         try {
-             const response = await fetch(
-                 `${apiPlatePath}/api/plates/coincidence/${placaIngresada}`
-             );
+        try {
+            const response = await fetch(
+                `${apiPlatePath}/api/plates/coincidence/${placaIngresada}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${sessionStorage.getItem("token")}`
+                    }
+                }
+            );
 
-             let result = await response.json();
+            if (response.status === 401 || response.status === 403) {
+                sessionStorage.clear();
+                navigate("/login");
+                return;
+            }
 
-             if (response.ok && Array.isArray(result) && result.length > 0) {
-                if(result.length>3)
-                    result = result.slice(0, 3); 
-                 setCoincidencias(result);
-                 setShowModal(true);
-             } else {
-                 setCoincidencias([]);
-                 setShowModal(false);
-             }
+            let result = await response.json();
 
-         } catch (err) {
+            if (response.ok && Array.isArray(result) && result.length > 0) {
+                if (result.length > 3)
+                    result = result.slice(0, 3);
+                setCoincidencias(result);
+                setShowModal(true);
+            } else {
+                setCoincidencias([]);
+                setShowModal(false);
+            }
+
+        } catch (err) {
             console.error("Error al consultar coincidencias:", err);
             setCoincidencias([]);
             setShowModal(false);
-         }finally{
+        } finally {
             setLoading(false);
-         }
+        }
     };
 
     /*const consultarCoincidencia = () => {
@@ -136,12 +159,21 @@ const PlateCorrection = () => {
 
             const response = await fetch(`${apiPath}/correct/plate`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${sessionStorage.getItem("token")}`
+                },
                 body: JSON.stringify({
                     gerId: selectedSalida,
                     cor_plate: placa
                 })
             });
+
+            if (response.status === 401 || response.status === 403) {
+                sessionStorage.clear()
+                navigate("/login");
+                return;
+            }
 
             const result = await response.json();
 
@@ -154,6 +186,8 @@ const PlateCorrection = () => {
 
         } catch (err) {
             console.error('Error processing correction:', err);
+            navigate("/login");
+            return;
         } finally {
             setLoading(false);
         }

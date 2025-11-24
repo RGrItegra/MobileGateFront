@@ -49,24 +49,24 @@ const ValorAPagar = () => {
     return placa.split('').join(' ');
   };
 
-   // Mapeo combinando ambas APIs
+  // Mapeo combinando ambas APIs
   const mapBackendData = (rateData, statusData) => {
     const now = new Date();
 
     const dateTimeStart = statusData?.inputDate ? new Date(statusData.inputDate) : null;
 
-    if(statusData?.nroTicket)
-    
-    return {
-      placa: statusData?.plate || '',
-      nroTicket: statusData?.nroTicket || '',
-      horaIngreso: formatHour24(dateTimeStart),
-      duracionEstadia: formatDuration(dateTimeStart,now),
-      costoParqueadero: rateData?.turnover?.amount ?? 0,
-      totalAPagar: rateData?.turnover?.amount ?? 0,
-      procesamiento: 0,
-      inputType
-    };
+    if (statusData?.nroTicket)
+
+      return {
+        placa: statusData?.plate || '',
+        nroTicket: statusData?.nroTicket || '',
+        horaIngreso: formatHour24(dateTimeStart),
+        duracionEstadia: formatDuration(dateTimeStart, now),
+        costoParqueadero: rateData?.turnover?.amount ?? 0,
+        totalAPagar: rateData?.turnover?.amount ?? 0,
+        procesamiento: 0,
+        inputType
+      };
   };
 
   const hasFetched = useRef(false);
@@ -81,13 +81,23 @@ const ValorAPagar = () => {
           //const ticketRateResponse = await consultarTicket(inputType, inputValue);
           const rateResponse = await consultarTicket(inputType, inputValue);
 
-          if(rateResponse.success) {
-            
-            sessionStorage.setItem("rate",JSON.stringify(rateResponse.data));
+          if (rateResponse.success) {
+
+            sessionStorage.setItem("rate", JSON.stringify(rateResponse.data));
 
             setPaymentData(mapBackendData(rateResponse.data, statusResponse));
           }
-        }catch(error) {
+        } catch (error) {
+
+          if (
+            error.message === "Token expiro" ||
+            error.message === "Usuario no autenticado , Inicie sesión nuevamente." ||
+            error.message.includes("401")
+          ) {
+            sessionStorage.clear();
+            navigate("/login");
+            return;
+          }
           console.error("Error al obtener el pago:", error)
           navigate('/login');
         }
@@ -100,7 +110,7 @@ const ValorAPagar = () => {
   const handleContinuarPago = () => {
     // Navegar a la página de confirmación de pago
     const confirmationData = {
-      ticket: paymentData.nroTicket ,
+      ticket: paymentData.nroTicket,
       placa: paymentData.placa,
       estacionamiento: paymentData.totalAPagar,
       transaccionDigital: paymentData.procesamiento,
@@ -182,19 +192,19 @@ const ValorAPagar = () => {
 
       {/* Botón de continuar pago */}
       {paymentData.costoParqueadero > 0 && (
-          <div className="continue-payment-section">
-            <button className="continue-payment-btn" onClick={handleContinuarPago}>
-              <div className="btn-icon">
-                <img src="/Recurso 25.png" className='PayIcon' alt="Pay Icon" />
-              </div>
-              <div className="btn-content">
-                <span className="btn-title">Continuar Pago</span>
-                <span className="btn-subtitle">Pago rápido y seguro</span>
-              </div>
-            </button>
-          </div>
+        <div className="continue-payment-section">
+          <button className="continue-payment-btn" onClick={handleContinuarPago}>
+            <div className="btn-icon">
+              <img src="/Recurso 25.png" className='PayIcon' alt="Pay Icon" />
+            </div>
+            <div className="btn-content">
+              <span className="btn-title">Continuar Pago</span>
+              <span className="btn-subtitle">Pago rápido y seguro</span>
+            </div>
+          </button>
+        </div>
       )}
-      
+
 
       {/* Modal de impresión de comprobante */}
       <PrintComprobanteModal

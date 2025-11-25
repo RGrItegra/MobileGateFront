@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Header from '../Header/Header';
 import CoincidenciasModal from '../modals/CoincidenciaModal/CoincidenciaModal';
+import { useNavigate } from 'react-router-dom';
 //import coincidenciasMock from '../test/test.json'
 
 import '../../styles/modals/CoincidenciaModal/CoincidenciaModal.css'
@@ -8,6 +9,8 @@ import '../../styles/Welcome/Welcome.css';
 import '../../styles/CorrecionPlaca/PlateCorrection.css'
 
 const PlateCorrection = () => {
+    const navigate = useNavigate();
+
     const [placa, setPlaca] = useState('');
     const [isValid, setIsValid] = useState(false);
     const [selectedSalida, setSelectedSalida] = useState(null);

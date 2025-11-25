@@ -24,6 +24,28 @@ const PlateCorrection = () => {
     const apiPath = process.env.API_URL || 'http://localhost:3000';
     const apiPlatePath = process.env.API_PLATE_URL || 'http://localhost:3000';
 
+    const hasFetched = useRef(false);
+    const getToken = () => {
+        try {
+            const data = JSON.parse(sessionStorage.getItem("user") || "{}");
+
+            const find = (obj) => {
+                if (!obj || typeof obj !== "object") return null;
+                if (typeof obj.token === "string") return obj.token;
+
+                return Object.values(obj).reduce(
+                    (acc, val) => acc || (typeof val === "object" ? find(val) : null),
+                    null
+                );
+            };
+
+            return find(data);
+        } catch {
+            return null;
+        }
+    };
+
+
     useEffect(() => {
         if (mensajeExito) {
             const timer = setTimeout(() => {
@@ -34,7 +56,6 @@ const PlateCorrection = () => {
         }
     }, [mensajeExito]);
 
-    const hasFetched = useRef(false);
 
     // Cargar salidas al montar el componente
     useEffect(() => {
@@ -48,18 +69,26 @@ const PlateCorrection = () => {
     const fetchSalidas = async () => {
         try {
             setLoading(true);
+
+            const token = getToken();
+            // console.log("TOKEN ENCONTRADO:", token);
+            if (!token) {
+                sessionStorage.clear();
+                navigate("/login")
+                return
+            }
             const response = await fetch(`${apiPath}/antenna/salidas`, {
                 headers: {
-                    Authorization: `Bearer ${sessionStorage.getItem("token")}`
+                    Authorization: `Bearer ${token}`
                 }
             });
-            const result = await response.json();
 
             if (response.status === 401 || response.status === 403) {
                 sessionStorage.clear();
                 navigate("/login");
                 return
             }
+            const result = await response.json();
 
             if (response.ok && result.data) {
                 // Si la API devuelve un solo objeto, conviértelo en array
@@ -96,11 +125,19 @@ const PlateCorrection = () => {
     const consultarCoincidencia = async (placaIngresada) => {
         setLoading(true);
         try {
+
+            const token = getToken();
+            if (!token) {
+                sessionStorage.clear();
+                navigate("/login");
+                return;
+            }
+
             const response = await fetch(
                 `${apiPlatePath}/api/plates/coincidence/${placaIngresada}`,
                 {
                     headers: {
-                        Authorization: `Bearer ${sessionStorage.getItem("token")}`
+                        Authorization: `Bearer ${token}`
                     }
                 }
             );
@@ -160,11 +197,17 @@ const PlateCorrection = () => {
         try {
             setLoading(true);
 
+            const token = getToken();
+            if (!token) {
+                sessionStorage.clear();
+                navigate("/login");
+                return;
+            }
             const response = await fetch(`${apiPath}/correct/plate`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${sessionStorage.getItem("token")}`
+                    Authorization: `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     gerId: selectedSalida,

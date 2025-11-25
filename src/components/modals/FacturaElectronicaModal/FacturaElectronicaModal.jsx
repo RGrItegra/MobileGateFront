@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import {  useNavigate } from 'react-router-dom';
 import { confirmarPago } from '../../../services/ticketService';
 import { buscarCliente } from '../../../services/clientService';
 import '../../../styles/modals/FacturaElectronicaModal/FacturaElectronicaModal.css';
@@ -20,6 +21,8 @@ const FacturaElectronicaModal = ({
   const [btnDisabledNo, setBtnDisabledNo] = useState(false);
   const [btnNameSi, setBtnNameSi] = useState('Si');
   const [btnNameNo, setBtnNameNo] = useState('No');
+
+  const navigate = useNavigate();
 
   // Efecto para manejar el overflow del body cuando se abre el modal
   useEffect(() => {

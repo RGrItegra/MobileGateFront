@@ -1,5 +1,5 @@
 
-const API_URL = "http://localhost:3000/ticket";
+const API_URL = process.env.API_URL|| 'http://localhost:3000';
 
 const tipoDocumentoMap = {
     "CÉDULA DE CIUDADANÍA": "CC",
@@ -14,13 +14,15 @@ export async function buscarCliente(tipoDcto, nroDcto) {
         const tipoMapped = tipoDocumentoMap[tipoDcto] || tipoDcto;
         const numDcto = nroDcto.trim();
 
+        const user = JSON.parse(sessionStorage.getItem("user"));
+
         if (!tipoMapped || !numDcto) throw new Error("Tipo y número de documento son requeridos");
 
         const response = await fetch(
-            `${API_URL}/client/find?tipoDcto=${tipoMapped}&nroDcto=${numDcto}`,
+            `${API_URL}/ticket/client/find?tipoDcto=${tipoMapped}&nroDcto=${numDcto}`,
             {
                 headers: {
-                    Authorization: `Bearer ${sessionStorage.getItem("token")}`
+                    Authorization: `Bearer ${user.token}`
                 }
             }
         );
